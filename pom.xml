@@ -3,7 +3,7 @@
 
     <groupId>org.vaadin</groupId>
     <artifactId>tinymce-for-flow</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <name>TinyMCE for Flow</name>
     <description>Integration of paper-slider for Vaadin 11</description>
 
@@ -30,7 +30,7 @@
         <url>https://github.com/mstahv/tinymce-for-flow</url>
         <connection>scm:git:git://github.com/mstahv/tinymce-for-flow.git</connection>
         <developerConnection>scm:git:ssh://git@github.com:/mstahv/tinymce-for-flow.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>tinymce-for-flow-1.0</tag>
     </scm>
 
     <issueManagement>
