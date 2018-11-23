@@ -12,6 +12,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- Doing release by manullay uploading to vaadin.com/directory -->
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
     <organization>
@@ -24,6 +25,19 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+    
+    <scm>
+        <url>https://github.com/mstahv/tinymce-for-flow</url>
+        <connection>scm:git:git://github.com/mstahv/tinymce-for-flow.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:/mstahv/tinymce-for-flow.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/mstahv/tinymce-for-flow/issues</url>
+    </issueManagement>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -40,16 +54,6 @@
         <repository>
             <id>Vaadin Directory</id>
             <url>http://maven.vaadin.com/vaadin-addons</url>
-        </repository>
-        <repository>
-            <id>Vaadin prereleases</id>
-            <url>http://maven.vaadin.com/vaadin-prereleases</url>
-        </repository>
-        <!-- The bintray repository contain webjars immediately after generation. If the webjar is available
-        in Maven central, you do not need this repository -->
-        <repository>
-            <id>webjars</id>
-            <url>https://dl.bintray.com/webjars/maven</url>
         </repository>
     </repositories>
 
