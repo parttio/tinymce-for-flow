@@ -1,4 +1,4 @@
-package org.vaadin;
+    package org.vaadin;
 
 import com.vaadin.flow.component.button.Button;
 import org.vaadin.tinymce.TinyMce;
@@ -8,11 +8,11 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.router.Route;
 
 @Route
-public class DemoView extends Div {
+public class TabSheetView extends Div {
 
     protected TinyMce tinyMce;
 
-    public DemoView() {
+    public TabSheetView() {
         tinyMce = new TinyMce();
         tinyMce.setConfig("{"
                 + "\"menubar\": false,"

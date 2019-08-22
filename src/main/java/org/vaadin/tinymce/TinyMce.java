@@ -3,37 +3,42 @@ package org.vaadin.tinymce;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JavaScript;
+import com.vaadin.flow.dom.Element;
+import com.vaadin.flow.dom.ElementConstants;
 import com.vaadin.flow.function.SerializableConsumer;
 import java.util.UUID;
 import org.github.legioth.field.Field;
 import org.github.legioth.field.ValueMapper;
 
 @Tag("div")
-@JavaScript("//cdn.tinymce.com/4.6/tinymce.min.js")
+@JavaScript("https://cdn.tinymce.com/4.6/tinymce.min.js")
 @JavaScript("frontend://tinymceConnector.js")
-public class TinyMce extends Component implements Field<TinyMce, String> {
+public class TinyMce extends Component implements Field<TinyMce, String>, HasSize {
 
     private final String id = UUID.randomUUID().toString();
     private boolean initialContentSent;
     private String currentValue = "";
     private final ValueMapper<String> valueMapper;
     private String config;
+    private Element ta = new Element("div");
 
     public TinyMce() {
-        setId(id);
+        getElement().appendChild(ta);
+        ta.setAttribute("id", id);
         this.valueMapper = Field.init(this, "", this::setEditorContent);
     }
-    
+
     public void setEditorContent(String html) {
         this.currentValue = html;
-        if(initialContentSent) {
-        runBeforeClientResponse(ui -> getElement()
-                .callFunction("$connector.setEditorContent", html));
+        if (initialContentSent) {
+            runBeforeClientResponse(ui -> getElement()
+                    .callFunction("$connector.setEditorContent", html));
         } else {
-            getElement().setProperty("innerHTML", html);
+            ta.setProperty("innerHTML",html);
         }
     }
 
@@ -67,6 +72,22 @@ public class TinyMce extends Component implements Field<TinyMce, String> {
 
     public void setConfig(String jsonConfig) {
         this.config = jsonConfig;
+    }
+    
+    public int getHeaderFooterHeight() {
+        return 36+37;
+    }
+    
+    public void setPixelHeight(int pixels) {
+        int contentHeight = pixels - getHeaderFooterHeight();
+        HasSize.super.setHeight(pixels + "px");
+        ta.getStyle().set(ElementConstants.STYLE_HEIGHT, contentHeight + "px");
+    }
+
+    @Override
+    public void setHeight(String height) {
+        HasSize.super.setHeight(height);
+        ta.getStyle().set(ElementConstants.STYLE_HEIGHT, height);
     }
 
 }

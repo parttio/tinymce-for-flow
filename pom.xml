@@ -5,7 +5,7 @@
     <artifactId>tinymce-for-flow</artifactId>
     <version>1.1-SNAPSHOT</version>
     <name>TinyMCE for Flow</name>
-    <description>Integration of paper-slider for Vaadin 11</description>
+    <description>Integration of TinyMCE for Vaadin 10+</description>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -45,7 +45,7 @@
                 <artifactId>vaadin-bom</artifactId>
                 <type>pom</type>
                 <scope>import</scope>
-                <version>11.0.2</version>
+                <version>14.0.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -105,6 +105,9 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>9.3.25.v20180904</version>
                 <configuration>
+                    <httpConnector>
+                        <port>9998</port>
+                    </httpConnector>
                     <scanIntervalSeconds>-1</scanIntervalSeconds>
                     <reload>manual</reload>
                     <!-- Use test scope because the UI/demo classes are in 
@@ -125,6 +128,20 @@
                 <configuration>
                     <releaseProfiles>directory</releaseProfiles>
                 </configuration>
+            </plugin>
+            
+            <!-- Needed to get the development server running in V14... -->
+            <plugin>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-maven-plugin</artifactId>
+                <version>14.0.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-frontend</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>

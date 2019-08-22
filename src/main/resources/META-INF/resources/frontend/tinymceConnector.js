@@ -27,8 +27,7 @@ window.Vaadin.Flow.tinymceConnector = {
           ],
           toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
         }
-        
-        baseconfig['selector'] =  "#" + c.id;
+        baseconfig['selector'] =  "#" + c.firstChild.id;
         baseconfig['setup'] = function(ed) {
           c.$connector.editor = ed;
           ed.on('setContent', function(e) {
