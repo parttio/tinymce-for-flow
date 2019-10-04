@@ -3,7 +3,7 @@
 
     <groupId>org.vaadin</groupId>
     <artifactId>tinymce-for-flow</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2</version>
     <name>TinyMCE for Flow</name>
     <description>Integration of TinyMCE for Vaadin 10+</description>
 
@@ -30,7 +30,7 @@
         <url>https://github.com/mstahv/tinymce-for-flow</url>
         <connection>scm:git:git://github.com/mstahv/tinymce-for-flow.git</connection>
         <developerConnection>scm:git:ssh://git@github.com:/mstahv/tinymce-for-flow.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>tinymce-for-flow-1.2</tag>
     </scm>
 
     <issueManagement>
