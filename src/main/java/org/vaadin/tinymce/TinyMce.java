@@ -103,4 +103,14 @@ public class TinyMce extends Component implements Field<TinyMce, String>, HasSiz
         ta.getStyle().set(ElementConstants.STYLE_HEIGHT, height);
     }
 
+    /**
+     * Replaces text in the editors selection (can be just a caret position).
+     * 
+     * @param htmlString the html snippet to be inserted 
+     */
+	public void replaceSelectionContent(String htmlString) {
+        runBeforeClientResponse(ui -> getElement()
+                .callFunction("$connector.replaceSelectionContent", htmlString));		
+	}
+
 }

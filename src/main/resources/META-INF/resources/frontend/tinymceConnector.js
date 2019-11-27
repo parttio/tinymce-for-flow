@@ -9,7 +9,12 @@ window.Vaadin.Flow.tinymceConnector = {
           
           setEditorContent : function(html) {
             this.editor.setContent(html);
+          },
+        
+          replaceSelectionContent : function(html) {
+            this.editor.selection.setContent(html);
           }
+        
         };
         
         var currentValue = "";
