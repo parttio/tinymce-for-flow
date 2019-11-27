@@ -54,6 +54,8 @@ public class TinyMce extends Component implements Field<TinyMce, String>, HasSiz
     protected void onDetach(DetachEvent detachEvent) {
     	super.onDetach(detachEvent);
     	initialContentSent = false;
+    	// save the current value to the dom element in case the component gets reattached
+    	setEditorContent(currentValue);
     }
 
     @SuppressWarnings("deprecation")
