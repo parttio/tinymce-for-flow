@@ -3,6 +3,7 @@ package org.vaadin.tinymce;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
@@ -19,7 +20,7 @@ import org.github.legioth.field.ValueMapper;
 @JavaScript("frontend://tinymceConnector.js")
 public class TinyMce extends Component implements Field<TinyMce, String>, HasSize {
 
-    private final String id = UUID.randomUUID().toString();
+    private String id;
     private boolean initialContentSent;
     private String currentValue = "";
     private final ValueMapper<String> valueMapper;
@@ -28,7 +29,6 @@ public class TinyMce extends Component implements Field<TinyMce, String>, HasSiz
 
     public TinyMce() {
         getElement().appendChild(ta);
-        ta.setAttribute("id", id);
         this.valueMapper = Field.init(this, "", this::setEditorContent);
     }
 
@@ -44,15 +44,26 @@ public class TinyMce extends Component implements Field<TinyMce, String>, HasSiz
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
+    	id = UUID.randomUUID().toString();
+        ta.setAttribute("id", id);
         super.onAttach(attachEvent);
         initConnector();
     }
+    
+    @Override
+    protected void onDetach(DetachEvent detachEvent) {
+    	super.onDetach(detachEvent);
+    	initialContentSent = false;
+    }
 
-    private void initConnector() {
+    @SuppressWarnings("deprecation")
+	private void initConnector() {
         this.initialContentSent = true;
-        runBeforeClientResponse(ui -> ui.getPage().executeJavaScript(
+        runBeforeClientResponse(ui -> {
+        	ui.getPage().executeJavaScript(
                 "window.Vaadin.Flow.tinymceConnector.initLazy($0, $1)", config,
-                getElement()));
+                getElement());
+        	});
     }
 
     void runBeforeClientResponse(SerializableConsumer<UI> command) {
