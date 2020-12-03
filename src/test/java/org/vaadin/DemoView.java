@@ -42,7 +42,7 @@ public class DemoView extends Div {
         add(b2);
         
         Button focus = new Button("focus", e->{
-            tinyMce.getElement().executeJs("focus()");
+            tinyMce.focus();
         });
         add(focus);
 
