@@ -46,6 +46,12 @@ public class DemoView extends Div {
         });
         add(focus);
 
+        Button disable = new Button("Disabble", e-> {
+            tinyMce.setEnabled(!tinyMce.isEnabled());
+            e.getSource().setText(tinyMce.isEnabled() ? "Disable" : "Enable");
+        });
+        add(disable);
+        
         tinyMce.addValueChangeListener(e -> {
             Notification.show("ValueChange event!");
             System.out.println(e.getValue());

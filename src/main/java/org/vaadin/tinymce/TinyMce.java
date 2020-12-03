@@ -149,4 +149,17 @@ public class TinyMce extends Component implements Field<TinyMce, String>, HasSiz
     public void focus() {
         getElement().executeJs("this._editor.focus()");
     }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        Field.super.setEnabled(enabled);
+        getElement().executeJs("this._editor.mode.set($0)", enabled ? "design" : "readonly");
+    }
+
+    @Override
+    public void setReadOnly(boolean readOnly) {
+        Field.super.setReadOnly(readOnly);
+        setEnabled(!readOnly);
+    }
+    
 }
