@@ -45,7 +45,7 @@
                 <artifactId>vaadin-bom</artifactId>
                 <type>pom</type>
                 <scope>import</scope>
-                <version>14.0.1</version>
+                <version>14.4.4</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
