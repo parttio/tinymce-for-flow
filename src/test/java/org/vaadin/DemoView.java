@@ -40,6 +40,11 @@ public class DemoView extends Div {
             Notification.show(tinyMce.getCurrentValue());
         });
         add(b2);
+        
+        Button focus = new Button("focus", e->{
+            tinyMce.getElement().executeJs("focus()");
+        });
+        add(focus);
 
         tinyMce.addValueChangeListener(e -> {
             Notification.show("ValueChange event!");

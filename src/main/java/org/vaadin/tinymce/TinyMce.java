@@ -145,4 +145,8 @@ public class TinyMce extends Component implements Field<TinyMce, String>, HasSiz
     public void replaceSelectionContent(String htmlString) {
         getElement().executeJs("this._editor.selection.setContent($0)", htmlString);
     }
+
+    public void focus() {
+        getElement().executeJs("this._editor.focus()");
+    }
 }
