@@ -3,8 +3,6 @@ package org.vaadin;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.vaadin.tinymce.TinyMce;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.html.Span;
@@ -12,6 +10,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.Route;
+import org.vaadin.tinymce.TinyMce;
 
 @Route
 public class GitHubIssue2 extends Composite<VerticalLayout> {
@@ -43,6 +42,5 @@ public class GitHubIssue2 extends Composite<VerticalLayout> {
 			content.removeAll();
 			content.add(tabsToPages.get(tabs.getSelectedTab()));
 		});
-
 	}
 }
