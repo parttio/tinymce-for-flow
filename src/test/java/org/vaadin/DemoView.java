@@ -14,18 +14,6 @@ public class DemoView extends Div {
 
     public DemoView() {
         tinyMce = new TinyMce();
-        // Full list of options: https://www.tiny.cloud/docs/integrations/webcomponent/
-        tinyMce.setPlugins("advlist autolink lists link image charmap print preview anchor\n" +
-"      searchreplace visualblocks code fullscreen\n" +
-"      insertdatetime media table paste code help wordcount");
-        tinyMce.setToolbar("undo redo | formatselect | bold italic backcolor |\n" +
-"      alignleft aligncenter alignright alignjustify |\n" +
-"      bullist numlist outdent indent | removeformat | help");
-        tinyMce.setContentStyle("body\n" +
-"      {\n" +
-"        font-family:Helvetica,Arial,sans-serif;\n" +
-"        font-size:14px; color:blue;\n" +
-"      }");
 
         tinyMce.setEditorContent("<p>Voi <strong>jorma</strong>!<p>");
         tinyMce.setHeight("700px");

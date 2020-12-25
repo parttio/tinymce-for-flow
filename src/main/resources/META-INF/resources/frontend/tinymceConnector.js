@@ -13,6 +13,18 @@ window.Vaadin.Flow.tinymceConnector = {
         
           replaceSelectionContent : function(html) {
             this.editor.selection.setContent(html);
+          },
+          
+          focus : function() {
+              this.editor.focus();
+          },
+          
+          setEnabled : function(enabled) {
+              this.editor.mode.set(enabled ? "design" : "readonly");
+          },
+          
+          setHeight : function(h) {
+              this.editor.settings.height = h;
           }
         
         };
@@ -36,15 +48,12 @@ window.Vaadin.Flow.tinymceConnector = {
         baseconfig['setup'] = function(ed) {
           c.$connector.editor = ed;
           ed.on('setContent', function(e) {
-                console.error('Editor content was set');
                 currentValue = ed.getContent();
           });
           ed.on('change', function(e) {
-                console.error('Editor was changed');
                 currentValue = ed.getContent();
           });
           ed.on('blur', function(e) {
-            console.error('Editor was blurred');
             currentValue = ed.getContent();
             pushChanges();
           });

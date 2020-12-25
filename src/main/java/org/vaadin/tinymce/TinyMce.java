@@ -21,8 +21,11 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.dependency.NpmPackage;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.dependency.JavaScript;
+import com.vaadin.flow.dom.Element;
+import com.vaadin.flow.function.SerializableConsumer;
+import java.util.UUID;
 import org.github.legioth.field.Field;
 import org.github.legioth.field.ValueMapper;
 
@@ -35,52 +38,39 @@ import org.github.legioth.field.ValueMapper;
  *
  * @author mstahv
  */
-@Tag("tinymce-editor")
-@NpmPackage(value = "@tinymce/tinymce-webcomponent", version = "1.0.2")
-@JsModule("@tinymce/tinymce-webcomponent/dist/tinymce-webcomponent.js")
+@Tag("div")
+@JavaScript("frontend://tinymceConnector.js")
 public class TinyMce extends Component implements Field<TinyMce, String>, HasSize {
 
+    private String id;
     private boolean initialContentSent;
     private String currentValue = "";
     private final ValueMapper<String> valueMapper;
+    private String config;
+    private Element ta = new Element("div");
 
     public TinyMce() {
+        getElement().appendChild(ta);
         this.valueMapper = Field.init(this, "", this::setEditorContent);
     }
 
     public void setEditorContent(String html) {
         this.currentValue = html;
         if (initialContentSent) {
-            getElement().executeJs("this._editor.setContent($0)", html);
+            runBeforeClientResponse(ui -> getElement()
+                    .callFunction("$connector.setEditorContent", html));
         } else {
-            getElement().setProperty("innerHTML", html);
+            ta.setProperty("innerHTML", html);
         }
-    }
-
-    @ClientCallable
-    private void updateValue(String htmlString) {
-        this.currentValue = htmlString;
-        valueMapper.setModelValue(currentValue, true);
     }
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
+        id = UUID.randomUUID().toString();
+        ta.setAttribute("id", id);
         super.onAttach(attachEvent);
         injectTinyMceScript();
-        // TODO avoid sending value when value not changed and send only a diff
-        getElement().executeJs("var el = this;"
-                + "this._editor.on('blur', function(evt) {el.$server.updateValue(evt.target.getContent());});"
-                + "");
         initConnector();
-    }
-
-    /**
-     * Injects actual editor script to the host page from the add-on bundle.
-     * <p>
-     * Override this with an empty implementation if you to use the cloud hosted version, or own custom script if needed.
-     */
-    protected void injectTinyMceScript() {
-        getUI().get().getPage().addJavaScript("tinymce_addon/tinymce/tinymce.js");
     }
 
     @Override
@@ -94,47 +84,37 @@ public class TinyMce extends Component implements Field<TinyMce, String>, HasSiz
     @SuppressWarnings("deprecation")
     private void initConnector() {
         this.initialContentSent = true;
+        runBeforeClientResponse(ui -> {
+            ui.getPage().executeJavaScript(
+                    "window.Vaadin.Flow.tinymceConnector.initLazy($0, $1)", config,
+                    getElement());
+        });
+    }
+
+    void runBeforeClientResponse(SerializableConsumer<UI> command) {
+        getElement().getNode().runWhenAttached(ui -> ui
+                .beforeClientResponse(this, context -> command.accept(ui)));
+    }
+
+    @ClientCallable
+    private void updateValue(String htmlString) {
+        this.currentValue = htmlString;
+        valueMapper.setModelValue(currentValue, true);
     }
 
     public String getCurrentValue() {
         return currentValue;
     }
 
+    public void setConfig(String jsonConfig) {
+        this.config = jsonConfig;
+    }
+
     @Override
     public void setHeight(String height) {
         HasSize.super.setHeight(height);
-        getElement().setAttribute("height", height);
-    }
-
-    /**
-     * @param contentStyleCss a small set of CSS styles to the editor,
-     */
-    public void setContentStyle(String contentStyleCss) {
-        getElement().setAttribute("content_style", contentStyleCss);
-    }
-
-    /**
-     * <p>
-     * The <code class="language-plaintext highlighter-rouge">toolbar</code>
-     * attribute accepts a space-separated string of toolbar buttons with pipe
-     * characters (<code class="language-plaintext highlighter-rouge">|</code>)
-     * for grouping buttons. For a list of available toolbar buttons, see:
-     * <a href="tiny.cloud/docs/advanced/available-toolbar-buttons/">Toolbar
-     * Buttons Available for TinyMCE</a>.</p>
-     *
-     * @param toolbarconfig the configuration
-     */
-    public void setToolbar(String toolbarconfig) {
-        getElement().setAttribute("toolbar", toolbarconfig);
-    }
-
-    /**
-     * The plugin configuration.
-     *
-     * @param config the plugin configuration string.
-     */
-    public void setPlugins(String config) {
-        getElement().setAttribute("plugins", config);
+        runBeforeClientResponse(ui -> getElement()
+                .callJsFunction("$connector.setHeight", height));
     }
 
     /**
@@ -143,23 +123,37 @@ public class TinyMce extends Component implements Field<TinyMce, String>, HasSiz
      * @param htmlString the html snippet to be inserted
      */
     public void replaceSelectionContent(String htmlString) {
-        getElement().executeJs("this._editor.selection.setContent($0)", htmlString);
+        runBeforeClientResponse(ui -> getElement()
+                .callJsFunction("$connector.replaceSelectionContent", htmlString));
+    }
+
+    /**
+     * Injects actual editor script to the host page from the add-on bundle.
+     * <p>
+     * Override this with an empty implementation if you to use the cloud hosted
+     * version, or own custom script if needed.
+     */
+    protected void injectTinyMceScript() {
+        getUI().get().getPage().addJavaScript("tinymce_addon/tinymce/tinymce.js");
     }
 
     public void focus() {
-        getElement().executeJs("this._editor.focus()");
+        runBeforeClientResponse(ui -> getElement()
+                .callJsFunction("$connector.focus"));
     }
 
     @Override
     public void setEnabled(boolean enabled) {
         Field.super.setEnabled(enabled);
-        getElement().executeJs("this._editor.mode.set($0)", enabled ? "design" : "readonly");
+        runBeforeClientResponse(ui -> getElement()
+                .callJsFunction("$connector.setEnabled", enabled));
     }
-
+    
     @Override
     public void setReadOnly(boolean readOnly) {
         Field.super.setReadOnly(readOnly);
         setEnabled(!readOnly);
     }
-    
+
+
 }
