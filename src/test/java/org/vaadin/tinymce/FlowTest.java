@@ -1,4 +1,4 @@
-package org.vaadin;
+package org.vaadin.tinymce;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;

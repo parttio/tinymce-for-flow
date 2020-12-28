@@ -1,4 +1,4 @@
-package org.vaadin;
+package org.vaadin.tinymce;
 
 import java.time.LocalDateTime;
 

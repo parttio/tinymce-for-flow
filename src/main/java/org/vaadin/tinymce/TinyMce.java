@@ -15,6 +15,11 @@
  */
 package org.vaadin.tinymce;
 
+import java.util.UUID;
+
+import org.github.legioth.field.Field;
+import org.github.legioth.field.ValueMapper;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Component;
@@ -24,10 +29,12 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.dom.Element;
+import com.vaadin.flow.dom.ShadowRoot;
 import com.vaadin.flow.function.SerializableConsumer;
-import java.util.UUID;
-import org.github.legioth.field.Field;
-import org.github.legioth.field.ValueMapper;
+
+import elemental.json.Json;
+import elemental.json.JsonArray;
+import elemental.json.JsonObject;
 
 /**
  * A Rich Text editor, based on TinyMCE Web Component.
@@ -46,19 +53,40 @@ public class TinyMce extends Component implements Field<TinyMce, String>, HasSiz
     private boolean initialContentSent;
     private String currentValue = "";
     private final ValueMapper<String> valueMapper;
-    private String config;
+    private String rawConfig;
+    JsonObject config = Json.createObject();
     private Element ta = new Element("div");
 
-    public TinyMce() {
-        getElement().appendChild(ta);
+    /**
+     * Creates a new TinyMce editor with shadowroot set or disabled. The shadow
+     * root should be used if the editor is in used in Dialog component,
+     * otherwise menu's and certain other features don't work. On the other
+     * hand, the shadow root must not be on when for example used in inline
+     * mode.
+     * 
+     * @param shadowRoot true of shadow root hack should be used
+     */
+    public TinyMce(boolean shadowRoot) {
+        setHeight("500px");
+        ta.getStyle().set("height", "100%");
+        if(shadowRoot) {
+            ShadowRoot shadow = getElement().attachShadow();
+            shadow.appendChild(ta);
+        } else {
+            getElement().appendChild(ta);
+        }
         this.valueMapper = Field.init(this, "", this::setEditorContent);
+    }
+    
+    public TinyMce() {
+        this(false);
     }
 
     public void setEditorContent(String html) {
         this.currentValue = html;
         if (initialContentSent) {
             runBeforeClientResponse(ui -> getElement()
-                    .callFunction("$connector.setEditorContent", html));
+                    .callJsFunction("$connector.setEditorContent", html));
         } else {
             ta.setProperty("innerHTML", html);
         }
@@ -68,6 +96,7 @@ public class TinyMce extends Component implements Field<TinyMce, String>, HasSiz
     protected void onAttach(AttachEvent attachEvent) {
         id = UUID.randomUUID().toString();
         ta.setAttribute("id", id);
+        ta.setProperty("innerHTML", currentValue);
         super.onAttach(attachEvent);
         injectTinyMceScript();
         initConnector();
@@ -78,16 +107,15 @@ public class TinyMce extends Component implements Field<TinyMce, String>, HasSiz
         super.onDetach(detachEvent);
         initialContentSent = false;
         // save the current value to the dom element in case the component gets reattached
-        setEditorContent(currentValue);
     }
 
     @SuppressWarnings("deprecation")
     private void initConnector() {
         this.initialContentSent = true;
+        
         runBeforeClientResponse(ui -> {
-            ui.getPage().executeJavaScript(
-                    "window.Vaadin.Flow.tinymceConnector.initLazy($0, $1)", config,
-                    getElement());
+            ui.getPage().executeJs("window.Vaadin.Flow.tinymceConnector.initLazy($0, $1, $2, $3)", rawConfig,
+                    getElement(), ta, config);
         });
     }
 
@@ -107,14 +135,32 @@ public class TinyMce extends Component implements Field<TinyMce, String>, HasSiz
     }
 
     public void setConfig(String jsonConfig) {
-        this.config = jsonConfig;
+        this.rawConfig = jsonConfig;
+    }
+    
+    public TinyMce configure(String configurationKey, String value) {
+    	config.put(configurationKey, value);
+        return this;
+    }
+    
+    public TinyMce configure(String configurationKey, String... value) {
+        JsonArray array = Json.createArray();
+        for (int i = 0; i < value.length; i++) {
+            array.set(i, value[i]);
+        }
+    	config.put(configurationKey, array);
+        return this;
     }
 
-    @Override
-    public void setHeight(String height) {
-        HasSize.super.setHeight(height);
-        runBeforeClientResponse(ui -> getElement()
-                .callJsFunction("$connector.setHeight", height));
+
+    public TinyMce configure(String configurationKey, boolean value) {
+    	config.put(configurationKey, value);
+        return this;
+    }
+
+    public TinyMce configure(String configurationKey, double value) {
+    	config.put(configurationKey, value);
+        return this;
     }
 
     /**

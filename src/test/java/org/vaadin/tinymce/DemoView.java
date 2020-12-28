@@ -1,4 +1,4 @@
-package org.vaadin;
+package org.vaadin.tinymce;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
@@ -17,6 +17,7 @@ public class DemoView extends Div {
 
         tinyMce.setEditorContent("<p>Voi <strong>jorma</strong>!<p>");
         tinyMce.setHeight("700px");
+        
         add(tinyMce);
 
         Button b = new Button("Set content dynamically", e -> {
