@@ -31,7 +31,7 @@ import org.vaadin.tinymce.TinyMce;
  * @author mstahv
  */
 @Route
-public class SizeTest extends VerticalLayout {
+public class DifferentSizes extends VerticalLayout {
 
     private TextField questionKey = new TextField("Question Key");
 
@@ -47,7 +47,7 @@ public class SizeTest extends VerticalLayout {
 
     private RadioButtonGroup<String> trigger = new RadioButtonGroup<>();
 
-    public SizeTest() {
+    public DifferentSizes() {
         String[] YesNoChoices = {"Yes", "No"};
 
         tmcdeditor1.setWidth("500px");
