@@ -26583,7 +26583,7 @@
           if (themeUrl) {
             ThemeManager.load(theme, editor.documentBaseURI.toAbsolute(themeUrl));
           } else {
-            ThemeManager.load(theme, 'themes/' + theme + '/theme' + suffix + '.js');
+            ThemeManager.load(theme, 'themes_tiny/' + theme + '/theme' + suffix + '.js');
           }
         }
         scriptLoader.loadQueue(function () {
