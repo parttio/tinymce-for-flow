@@ -46,7 +46,7 @@ import elemental.json.JsonObject;
  * @author mstahv
  */
 @Tag("div")
-@JavaScript("frontend://tinymceConnector.js")
+@JavaScript("./tinymceConnector.js")
 public class TinyMce extends Component implements Field<TinyMce, String>, HasSize {
 
     private String id;
@@ -98,7 +98,8 @@ public class TinyMce extends Component implements Field<TinyMce, String>, HasSiz
         ta.setAttribute("id", id);
         ta.setProperty("innerHTML", currentValue);
         super.onAttach(attachEvent);
-        injectTinyMceScript();
+        if(attachEvent.isInitialAttach())
+            injectTinyMceScript();
         initConnector();
     }
 
@@ -180,7 +181,12 @@ public class TinyMce extends Component implements Field<TinyMce, String>, HasSiz
      * version, or own custom script if needed.
      */
     protected void injectTinyMceScript() {
-        getUI().get().getPage().addJavaScript("tinymce_addon/tinymce/tinymce.js");
+        int majorVersion = com.vaadin.flow.server.Version.getMajorVersion();
+        if(majorVersion > 2) {
+            getUI().get().getPage().addJavaScript("frontend/tinymce_addon/tinymce/tinymce.js");
+        } else {
+            getUI().get().getPage().addJavaScript("tinymce_addon/tinymce/tinymce.js");
+        }
     }
 
     public void focus() {
