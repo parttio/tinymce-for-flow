@@ -6,6 +6,7 @@
     <version>3.3.1-SNAPSHOT</version>
     <name>TinyMCE for Flow</name>
     <description>Integration of TinyMCE for Vaadin 10+</description>
+    <url>https://github.com/parttio/tinymce-for-flow</url>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
