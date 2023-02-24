@@ -140,6 +140,7 @@
                     <useReleaseProfile>false</useReleaseProfile>
                     <releaseProfiles>release</releaseProfiles>
                     <goals>deploy</goals>
+                    <scmCommentPrefix>[ci skip]</scmCommentPrefix>
                 </configuration>
             </plugin>
 
