@@ -15,26 +15,22 @@
  */
 package org.vaadin.tinymce;
 
-import java.util.UUID;
-
-import org.github.legioth.field.Field;
-import org.github.legioth.field.ValueMapper;
-
+import com.vaadin.flow.component.AbstractCompositeField;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JavaScript;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.dom.ShadowRoot;
 import com.vaadin.flow.function.SerializableConsumer;
-
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
+import java.util.UUID;
 
 /**
  * A Rich Text editor, based on TinyMCE Web Component.
@@ -47,12 +43,11 @@ import elemental.json.JsonObject;
  */
 @Tag("div")
 @JavaScript("./tinymceConnector.js")
-public class TinyMce extends Component implements Field<TinyMce, String>, HasSize {
+public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implements HasSize {
 
     private String id;
     private boolean initialContentSent;
     private String currentValue = "";
-    private final ValueMapper<String> valueMapper;
     private String rawConfig;
     JsonObject config = Json.createObject();
     private Element ta = new Element("div");
@@ -67,6 +62,7 @@ public class TinyMce extends Component implements Field<TinyMce, String>, HasSiz
      * @param shadowRoot true of shadow root hack should be used
      */
     public TinyMce(boolean shadowRoot) {
+        super("");
         setHeight("500px");
         ta.getStyle().set("height", "100%");
         if(shadowRoot) {
@@ -75,7 +71,6 @@ public class TinyMce extends Component implements Field<TinyMce, String>, HasSiz
         } else {
             getElement().appendChild(ta);
         }
-        this.valueMapper = Field.init(this, "", this::setEditorContent);
     }
     
     public TinyMce() {
@@ -128,7 +123,7 @@ public class TinyMce extends Component implements Field<TinyMce, String>, HasSiz
     @ClientCallable
     private void updateValue(String htmlString) {
         this.currentValue = htmlString;
-        valueMapper.setModelValue(currentValue, true);
+        setModelValue(htmlString, true);
     }
 
     public String getCurrentValue() {
@@ -196,15 +191,20 @@ public class TinyMce extends Component implements Field<TinyMce, String>, HasSiz
 
     @Override
     public void setEnabled(boolean enabled) {
-        Field.super.setEnabled(enabled);
+        super.setEnabled(enabled);
         runBeforeClientResponse(ui -> getElement()
                 .callJsFunction("$connector.setEnabled", enabled));
     }
     
     @Override
     public void setReadOnly(boolean readOnly) {
-        Field.super.setReadOnly(readOnly);
+        super.setReadOnly(readOnly);
         setEnabled(!readOnly);
+    }
+
+    @Override
+    protected void setPresentationValue(String t) {
+        setEditorContent(t);
     }
 
 

@@ -74,9 +74,8 @@
             <artifactId>flow-server</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.github.legioth</groupId>
-            <artifactId>field</artifactId>
-            <version>0.10.1</version>
+            <groupId>com.vaadin</groupId>
+            <artifactId>flow-html-components</artifactId>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
@@ -87,10 +86,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>flow-html-components</artifactId>
         </dependency>
     </dependencies>
 
