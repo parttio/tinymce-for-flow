@@ -30,9 +30,9 @@
     </licenses>
     
     <scm>
-        <url>https://github.com/mstahv/tinymce-for-flow</url>
-        <connection>scm:git:git://github.com/mstahv/tinymce-for-flow.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:/mstahv/tinymce-for-flow.git</developerConnection>
+        <url>https://github.com/parttio/tinymce-for-flow</url>
+        <connection>scm:git:git://github.com/parttio/tinymce-for-flow.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:/parttio/tinymce-for-flow.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
@@ -45,7 +45,7 @@
 
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/mstahv/tinymce-for-flow/issues</url>
+        <url>https://github.com/parttio/tinymce-for-flow/issues</url>
     </issueManagement>
 
     <dependencyManagement>
