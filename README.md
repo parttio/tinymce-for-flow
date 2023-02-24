@@ -28,10 +28,6 @@ To tag a release and increment versions, issue:
     mvn release:prepare release:clean
 
 Answer questions, defaults most often fine.
-Note that `release:perform` is not needed as there is a GitHub Action is set up build and to push release to Maven Central automatically. 
-
-Then push the tag (and new development version) to SCM (this triggers GitHub Action to execute):
-
-    git push
+Note that `release:perform` is not needed as there is a GitHub Action is set up build and to push release to Maven Central automatically.
 
 Directory will automatically pick up new releases within about half an hour, but if browser or Vaadin version support change, be sure to adjust the metadata in Vaadin Directory UI.
