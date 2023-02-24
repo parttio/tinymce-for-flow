@@ -52,7 +52,7 @@ window.Vaadin.Flow.tinymceConnector = {
             pushChanges();
           });
         };
-        /* Without timeout Vaadin Select throws exception, try TinyMceWithVaadinSelect and click button twice */
-        setTimeout(() => {tinymce.init(baseconfig)}, 1);
+
+        tinymce.init(baseconfig);
     }
 }
