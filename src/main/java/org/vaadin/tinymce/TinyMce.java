@@ -176,12 +176,7 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
      * version, or own custom script if needed.
      */
     protected void injectTinyMceScript() {
-        int majorVersion = com.vaadin.flow.server.Version.getMajorVersion();
-        if(majorVersion > 2) {
-            getUI().get().getPage().addJavaScript("frontend/tinymce_addon/tinymce/tinymce.js");
-        } else {
-            getUI().get().getPage().addJavaScript("tinymce_addon/tinymce/tinymce.js");
-        }
+        getUI().get().getPage().addJavaScript("frontend/tinymce_addon/tinymce/tinymce.min.js");
     }
 
     public void focus() {
