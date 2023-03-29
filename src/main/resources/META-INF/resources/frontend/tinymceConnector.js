@@ -4,11 +4,9 @@ window.Vaadin.Flow.tinymceConnector = {
         if (c.$connector) {
             return;
         }
-        console.log("initLazy");
         c.$connector = {
           
           setEditorContent : function(html) {
-            console.log("setEditorContent");
             this.editor.setContent(html);
           },
         
@@ -21,7 +19,6 @@ window.Vaadin.Flow.tinymceConnector = {
           },
           
           setEnabled : function(enabled) {
-              console.log("setEnabled");
               this.editor.mode.set(enabled ? "design" : "readonly");
           }
                   
@@ -49,23 +46,20 @@ window.Vaadin.Flow.tinymceConnector = {
         baseconfig['target'] = ta;
         
         baseconfig['setup'] = function(ed) {
-           console.log("setup");
           c.$connector.editor = ed;
           ed.on('setContent', function(e) {
-           console.log("setContent");
                 currentValue = ed.getContent();
           });
           ed.on('change', function(e) {
-              console.log("change");
                 currentValue = ed.getContent();
           });
           ed.on('blur', function(e) {
-              console.log("blur");
             currentValue = ed.getContent();
             pushChanges();
           });
         };
 
         tinymce.init(baseconfig);
+
     }
 }
