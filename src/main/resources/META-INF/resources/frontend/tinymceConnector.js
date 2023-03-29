@@ -38,7 +38,9 @@ window.Vaadin.Flow.tinymceConnector = {
         baseconfig['height'] = "100%";
 
         baseconfig['target'] = ta;
-        
+
+        baseconfig['base_url'] = "frontend/tinymce_addon/tinymce/"
+
         baseconfig['setup'] = function(ed) {
           c.$connector.editor = ed;
           ed.on('setContent', function(e) {

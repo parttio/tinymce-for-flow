@@ -9,8 +9,8 @@
     <url>https://github.com/parttio/tinymce-for-flow</url>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
@@ -56,7 +56,7 @@
                 <artifactId>vaadin-bom</artifactId>
                 <type>pom</type>
                 <scope>import</scope>
-                <version>23.3.6</version>
+                <version>24.0.2</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -71,16 +71,7 @@
     <dependencies>
         <dependency>
             <groupId>com.vaadin</groupId>
-            <artifactId>flow-server</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>flow-html-components</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
             <artifactId>vaadin-core</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -107,23 +98,22 @@
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.4.50.v20221201</version>
+                <version>11.0.14</version>
                 <configuration>
                     <supportedPackagings>jar</supportedPackagings>
                     <httpConnector>
                         <port>9998</port>
                     </httpConnector>
-                    <scanIntervalSeconds>-1</scanIntervalSeconds>
-                    <reload>manual</reload>
-                    <!-- Use test scope because the UI/demo classes are in 
+                    <scan>0</scan>
+                    <!-- Use test scope because the UI/demo classes are in
                     the test package. -->
                     <useTestScope>true</useTestScope>
-                    <webAppConfig>
-                        <!-- This is only needed to be able to unzip webjars 
+                    <webApp>
+                        <!-- This is only needed to be able to unzip webjars
                         directly into src/test/webjar-debug and modify them for testing -->
                         <resourceBase>src/test/webjar-debug/META-INF/resources</resourceBase>
                         <resourceBase>${project.basedir}/src/main/resources/META-INF/resources</resourceBase>
-                    </webAppConfig>
+                    </webApp>
                 </configuration>
             </plugin>
             <plugin>
@@ -142,7 +132,7 @@
             <plugin>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-maven-plugin</artifactId>
-                <version>23.3.6</version>
+                <version>24.0.2</version>
                 <executions>
                     <execution>
                         <goals>
