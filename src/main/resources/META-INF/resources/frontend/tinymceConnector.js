@@ -17,7 +17,11 @@ window.Vaadin.Flow.tinymceConnector = {
           focus : function() {
               this.editor.focus();
           },
-          
+
+          blur : function() {
+              this.editor.blur();
+          },
+
           setEnabled : function(enabled) {
               this.editor.mode.set(enabled ? "design" : "readonly");
           }
@@ -56,7 +60,14 @@ window.Vaadin.Flow.tinymceConnector = {
           ed.on('blur', function(e) {
             currentValue = ed.getContent();
             pushChanges();
+            const event = new Event("blur");
+            c.dispatchEvent(event);
           });
+          ed.on('focus', function(e) {
+            const event = new Event("focus");
+            c.dispatchEvent(event);
+          });
+
         };
 
         tinymce.init(baseconfig);

@@ -1,5 +1,7 @@
 package org.vaadin.tinymce;
 
+import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.KeyModifier;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
@@ -34,6 +36,18 @@ public class DemoView extends Div {
             tinyMce.focus();
         });
         add(focus);
+        tinyMce.addFocusListener(e->{
+            Notification.show("Focus event!");
+        });
+        tinyMce.addBlurListener(e->{
+            Notification.show("Blur event!");
+        });
+
+        Button blur = new Button("blur (NOT SUPPORTED)", e-> {
+            tinyMce.blur();
+        });
+        blur.addClickShortcut(Key.KEY_B, KeyModifier.CONTROL);
+        add(blur);
 
         Button disable = new Button("Disabble", e-> {
             tinyMce.setEnabled(!tinyMce.isEnabled());

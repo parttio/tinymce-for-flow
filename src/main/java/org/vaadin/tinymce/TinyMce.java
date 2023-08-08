@@ -18,7 +18,9 @@ package org.vaadin.tinymce;
 import com.vaadin.flow.component.AbstractCompositeField;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
@@ -27,6 +29,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.dom.ShadowRoot;
 import com.vaadin.flow.function.SerializableConsumer;
+import com.vaadin.flow.shared.Registration;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
@@ -43,7 +46,7 @@ import java.util.UUID;
  */
 @Tag("div")
 @JavaScript("./tinymceConnector.js")
-public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implements HasSize {
+public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implements HasSize, Focusable<TinyMce> {
 
     private String id;
     private boolean initialContentSent;
@@ -179,9 +182,20 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
         getUI().get().getPage().addJavaScript("frontend/tinymce_addon/tinymce/tinymce.min.js");
     }
 
+    @Override
     public void focus() {
         runBeforeClientResponse(ui -> getElement()
                 .callJsFunction("$connector.focus"));
+    }
+
+    @Override
+    public Registration addFocusListener(ComponentEventListener<FocusEvent<TinyMce>> listener) {
+        return Focusable.super.addFocusListener(listener);
+    }
+
+    @Override
+    public void blur() {
+        throw new RuntimeException("Not implemented");
     }
 
     @Override
