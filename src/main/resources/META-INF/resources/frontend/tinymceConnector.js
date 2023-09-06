@@ -18,23 +18,13 @@ window.Vaadin.Flow.tinymceConnector = {
               this.editor.focus();
           },
 
-          blur : function() {
-              this.editor.blur();
-          },
-
           setEnabled : function(enabled) {
               this.editor.mode.set(enabled ? "design" : "readonly");
           }
                   
         };
         
-        var currentValue = "";
-
-        const pushChanges = function() {
-          c.$server.updateValue(currentValue)
-        }
-
-        var baseconfig =  JSON.parse(customConfig) || {}
+        var baseconfig = JSON.parse(customConfig) || {} ;
         
         Object.assign(baseconfig, options);
 
@@ -52,19 +42,26 @@ window.Vaadin.Flow.tinymceConnector = {
         baseconfig['setup'] = function(ed) {
           c.$connector.editor = ed;
           ed.on('setContent', function(e) {
-                currentValue = ed.getContent();
+
           });
           ed.on('change', function(e) {
-                currentValue = ed.getContent();
-          });
+            //    console.log("TMCE change");
+           });
           ed.on('blur', function(e) {
-            currentValue = ed.getContent();
-            pushChanges();
-            const event = new Event("blur");
+            //console.log("TMCE blur");
+            const event = new Event("tblur");
             c.dispatchEvent(event);
           });
           ed.on('focus', function(e) {
-            const event = new Event("focus");
+            //console.log("TMCE focus");
+            const event = new Event("tfocus");
+            c.dispatchEvent(event);
+          });
+
+          ed.on('input', function(e) {
+            //console.log("TMCE input");
+            const event = new Event("tchange");
+            event.htmlString = ed.getContent();
             c.dispatchEvent(event);
           });
 

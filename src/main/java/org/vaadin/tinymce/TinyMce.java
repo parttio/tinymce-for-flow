@@ -26,6 +26,12 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.dom.DebouncePhase;
+import com.vaadin.flow.dom.DomEvent;
+import com.vaadin.flow.dom.DomEventListener;
+import com.vaadin.flow.dom.DomListenerRegistration;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.dom.ShadowRoot;
 import com.vaadin.flow.function.SerializableConsumer;
@@ -33,11 +39,12 @@ import com.vaadin.flow.shared.Registration;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
+
 import java.util.UUID;
 
 /**
  * A Rich Text editor, based on TinyMCE Web Component.
- *
+ * <p>
  * Some configurations has Java shorthand, some must be adjusted via
  * getElement().setAttribute(String, String). See full options via
  * https://www.tiny.cloud/docs/integrations/webcomponent/
@@ -46,7 +53,7 @@ import java.util.UUID;
  */
 @Tag("div")
 @JavaScript("./tinymceConnector.js")
-public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implements HasSize, Focusable<TinyMce> {
+public class TinyMce extends AbstractCompositeField<Div, TinyMce, String> implements HasSize, Focusable<TinyMce> {
 
     private String id;
     private boolean initialContentSent;
@@ -61,21 +68,29 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
      * otherwise menu's and certain other features don't work. On the other
      * hand, the shadow root must not be on when for example used in inline
      * mode.
-     * 
+     *
      * @param shadowRoot true of shadow root hack should be used
      */
     public TinyMce(boolean shadowRoot) {
         super("");
         setHeight("500px");
         ta.getStyle().set("height", "100%");
-        if(shadowRoot) {
+        if (shadowRoot) {
             ShadowRoot shadow = getElement().attachShadow();
             shadow.appendChild(ta);
         } else {
             getElement().appendChild(ta);
         }
+        DomListenerRegistration domListenerRegistration = getElement().addEventListener("tchange", (DomEventListener) event -> {
+            boolean value = event.getEventData().hasKey("event.htmlString");
+            String htmlString = event.getEventData().getString("event.htmlString");
+            currentValue = htmlString;
+            setModelValue(htmlString, true);
+        });
+        domListenerRegistration.addEventData("event.htmlString");
+        domListenerRegistration.debounce(5000);
     }
-    
+
     public TinyMce() {
         this(false);
     }
@@ -96,7 +111,7 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
         ta.setAttribute("id", id);
         ta.setProperty("innerHTML", currentValue);
         super.onAttach(attachEvent);
-        if(attachEvent.isInitialAttach())
+        if (attachEvent.isInitialAttach())
             injectTinyMceScript();
         initConnector();
     }
@@ -111,7 +126,7 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
     @SuppressWarnings("deprecation")
     private void initConnector() {
         this.initialContentSent = true;
-        
+
         runBeforeClientResponse(ui -> {
             ui.getPage().executeJs("window.Vaadin.Flow.tinymceConnector.initLazy($0, $1, $2, $3)", rawConfig,
                     getElement(), ta, config);
@@ -123,12 +138,6 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
                 .beforeClientResponse(this, context -> command.accept(ui)));
     }
 
-    @ClientCallable
-    private void updateValue(String htmlString) {
-        this.currentValue = htmlString;
-        setModelValue(htmlString, true);
-    }
-
     public String getCurrentValue() {
         return currentValue;
     }
@@ -136,29 +145,29 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
     public void setConfig(String jsonConfig) {
         this.rawConfig = jsonConfig;
     }
-    
+
     public TinyMce configure(String configurationKey, String value) {
-    	config.put(configurationKey, value);
+        config.put(configurationKey, value);
         return this;
     }
-    
+
     public TinyMce configure(String configurationKey, String... value) {
         JsonArray array = Json.createArray();
         for (int i = 0; i < value.length; i++) {
             array.set(i, value[i]);
         }
-    	config.put(configurationKey, array);
+        config.put(configurationKey, array);
         return this;
     }
 
 
     public TinyMce configure(String configurationKey, boolean value) {
-    	config.put(configurationKey, value);
+        config.put(configurationKey, value);
         return this;
     }
 
     public TinyMce configure(String configurationKey, double value) {
-    	config.put(configurationKey, value);
+        config.put(configurationKey, value);
         return this;
     }
 
@@ -190,12 +199,19 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
 
     @Override
     public Registration addFocusListener(ComponentEventListener<FocusEvent<TinyMce>> listener) {
-        return Focusable.super.addFocusListener(listener);
+        DomListenerRegistration domListenerRegistration = getElement().addEventListener("tfocus", event -> listener.onComponentEvent(new FocusEvent<>(this, false)));
+        return domListenerRegistration;
+    }
+
+    @Override
+    public Registration addBlurListener(ComponentEventListener<BlurEvent<TinyMce>> listener) {
+        DomListenerRegistration domListenerRegistration = getElement().addEventListener("tblur", event -> listener.onComponentEvent(new BlurEvent<>(this, false)));
+        return domListenerRegistration;
     }
 
     @Override
     public void blur() {
-        throw new RuntimeException("Not implemented");
+        throw new RuntimeException("Not implemented, TinyMce does not support programmatic blur.");
     }
 
     @Override
@@ -204,7 +220,7 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
         runBeforeClientResponse(ui -> getElement()
                 .callJsFunction("$connector.setEnabled", enabled));
     }
-    
+
     @Override
     public void setReadOnly(boolean readOnly) {
         super.setReadOnly(readOnly);
