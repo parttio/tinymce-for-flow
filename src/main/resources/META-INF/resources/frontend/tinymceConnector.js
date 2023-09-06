@@ -45,7 +45,10 @@ window.Vaadin.Flow.tinymceConnector = {
 
           });
           ed.on('change', function(e) {
-            //    console.log("TMCE change");
+                // console.log("TMCE change");
+                const event = new Event("tchange");
+                event.htmlString = ed.getContent();
+                c.dispatchEvent(event);
            });
           ed.on('blur', function(e) {
             //console.log("TMCE blur");
