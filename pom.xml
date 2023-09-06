@@ -3,7 +3,7 @@
 
     <groupId>org.parttio</groupId>
     <artifactId>tinymce-for-flow</artifactId>
-    <version>4.0.2</version>
+    <version>4.0.3-SNAPSHOT</version>
     <name>TinyMCE for Flow</name>
     <description>Integration of TinyMCE for Vaadin 10+</description>
     <url>https://github.com/parttio/tinymce-for-flow</url>
@@ -34,7 +34,7 @@
         <url>https://github.com/parttio/tinymce-for-flow</url>
         <connection>scm:git:git://github.com/parttio/tinymce-for-flow.git</connection>
         <developerConnection>scm:git:ssh://git@github.com:/parttio/tinymce-for-flow.git</developerConnection>
-        <tag>tinymce-for-flow-4.0.2</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
