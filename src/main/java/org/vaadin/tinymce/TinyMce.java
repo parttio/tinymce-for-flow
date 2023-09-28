@@ -55,12 +55,15 @@ import java.util.UUID;
 @JavaScript("./tinymceConnector.js")
 public class TinyMce extends AbstractCompositeField<Div, TinyMce, String> implements HasSize, Focusable<TinyMce> {
 
+    private final DomListenerRegistration domListenerRegistration;
     private String id;
     private boolean initialContentSent;
     private String currentValue = "";
     private String rawConfig;
     JsonObject config = Json.createObject();
     private Element ta = new Element("div");
+
+    private int debounceTimeout = 5000;
 
     /**
      * Creates a new TinyMce editor with shadowroot set or disabled. The shadow
@@ -81,14 +84,22 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String> implem
         } else {
             getElement().appendChild(ta);
         }
-        DomListenerRegistration domListenerRegistration = getElement().addEventListener("tchange", (DomEventListener) event -> {
+        domListenerRegistration = getElement().addEventListener("tchange", (DomEventListener) event -> {
             boolean value = event.getEventData().hasKey("event.htmlString");
             String htmlString = event.getEventData().getString("event.htmlString");
             currentValue = htmlString;
             setModelValue(htmlString, true);
         });
         domListenerRegistration.addEventData("event.htmlString");
-        domListenerRegistration.debounce(5000);
+        domListenerRegistration.debounce(debounceTimeout);
+    }
+
+    /**
+     * Sets the debounce timeout for the value change event. The default is 5000.
+     * @param debounceTimeout the debounce timeout in milliseconds
+     */
+    public void setDebounceTimeout(int debounceTimeout) {
+        this.debounceTimeout = debounceTimeout;
     }
 
     public TinyMce() {
