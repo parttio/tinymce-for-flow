@@ -100,6 +100,7 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String> implem
      */
     public void setDebounceTimeout(int debounceTimeout) {
         this.debounceTimeout = debounceTimeout;
+        domListenerRegistration.debounce(debounceTimeout);
     }
 
     public TinyMce() {
