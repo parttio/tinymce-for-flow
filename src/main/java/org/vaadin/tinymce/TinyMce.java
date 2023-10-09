@@ -15,6 +15,10 @@
  */
 package org.vaadin.tinymce;
 
+import com.github.difflib.DiffUtils;
+import com.github.difflib.UnifiedDiffUtils;
+import com.github.difflib.patch.Patch;
+import com.github.difflib.patch.PatchFailedException;
 import com.vaadin.flow.component.AbstractCompositeField;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
@@ -39,7 +43,11 @@ import com.vaadin.flow.shared.Registration;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
+import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -59,11 +67,12 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String> implem
     private String id;
     private boolean initialContentSent;
     private String currentValue = "";
+    private String diffBase = currentValue;
     private String rawConfig;
     JsonObject config = Json.createObject();
     private Element ta = new Element("div");
 
-    private int debounceTimeout = 5000;
+    private int debounceTimeout = 2000;
 
     /**
      * Creates a new TinyMce editor with shadowroot set or disabled. The shadow
@@ -86,12 +95,50 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String> implem
         }
         domListenerRegistration = getElement().addEventListener("tchange", (DomEventListener) event -> {
             boolean value = event.getEventData().hasKey("event.htmlString");
-            String htmlString = event.getEventData().getString("event.htmlString");
-            currentValue = htmlString;
-            setModelValue(htmlString, true);
+            if(event.getEventData().hasKey("event.patch_text")) {
+                String patchText = event.getEventData().getString("event.patch_text");
+
+                System.out.println(patchText);
+
+                DiffMatchPatch dmp = new DiffMatchPatch();
+
+                LinkedList<DiffMatchPatch.Patch> patches = (LinkedList<DiffMatchPatch.Patch>) dmp.patchFromText(patchText);
+                Object[] objects = dmp.patchApply(patches, currentValue);
+                String newValueViaDiff = objects[0].toString();
+                System.out.println(newValueViaDiff.length());
+
+                currentValue = newValueViaDiff;
+                setModelValue(newValueViaDiff, true);
+                //System.out.println(newValueViaDiff);
+
+                // TODO figure out when it makes sense to try to change
+                // the "diffBase". If diffs grow to be so large they
+                // overweight the chattiness coming from akno messages
+                if(true) {
+                    acknowledge((int) event.getEventData().getNumber("event.idx"));
+                }
+            }
+
+            if(value) {
+                String htmlString = event.getEventData().getString("event.htmlString");
+                currentValue = htmlString;
+                setModelValue(htmlString, true);
+            } else {
+                // diff transferred
+            }
         });
-        domListenerRegistration.addEventData("event.htmlString");
+        domListenerRegistration.addEventData("event.patch_text");
+        domListenerRegistration.addEventData("event.idx");
         domListenerRegistration.debounce(debounceTimeout);
+    }
+
+    private void acknowledge(int id) {
+        getElement().executeJs("this.$connector.acknowledge", id).then(r -> {
+            String string = r.asString();
+            if("ok".equals(string)) {
+                diffBase = currentValue;
+            }
+        });
     }
 
     /**
@@ -111,8 +158,6 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String> implem
         if (initialContentSent) {
             runBeforeClientResponse(ui -> getElement()
                     .callJsFunction("$connector.setEditorContent", html));
-        } else {
-            ta.setProperty("innerHTML", html);
         }
     }
 
@@ -137,16 +182,18 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String> implem
     @SuppressWarnings("deprecation")
     private void initConnector() {
         this.initialContentSent = true;
-
         runBeforeClientResponse(ui -> {
-            ui.getPage().executeJs("window.Vaadin.Flow.tinymceConnector.initLazy($0, $1, $2, $3)", rawConfig,
-                    getElement(), ta, config);
+            ui.getPage().executeJs("window.Vaadin.Flow.tinymceConnector.initLazy($0, $1, $2, $3, $4)", rawConfig,
+                    getElement(), ta, config, currentValue);
+
         });
     }
 
     void runBeforeClientResponse(SerializableConsumer<UI> command) {
-        getElement().getNode().runWhenAttached(ui -> ui
-                .beforeClientResponse(this, context -> command.accept(ui)));
+        getElement().getNode().runWhenAttached(ui -> {
+            ui.beforeClientResponse(this, context -> command.accept(ui));
+            diffBase = currentValue;
+        });
     }
 
     public String getCurrentValue() {
