@@ -94,18 +94,14 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String> implem
             getElement().appendChild(ta);
         }
         domListenerRegistration = getElement().addEventListener("tchange", (DomEventListener) event -> {
-            boolean value = event.getEventData().hasKey("event.htmlString");
             if(event.getEventData().hasKey("event.patch_text")) {
                 String patchText = event.getEventData().getString("event.patch_text");
-
-                System.out.println(patchText);
 
                 DiffMatchPatch dmp = new DiffMatchPatch();
 
                 LinkedList<DiffMatchPatch.Patch> patches = (LinkedList<DiffMatchPatch.Patch>) dmp.patchFromText(patchText);
                 Object[] objects = dmp.patchApply(patches, currentValue);
                 String newValueViaDiff = objects[0].toString();
-                System.out.println(newValueViaDiff.length());
 
                 currentValue = newValueViaDiff;
                 setModelValue(newValueViaDiff, true);
@@ -114,22 +110,29 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String> implem
                 // TODO figure out when it makes sense to try to change
                 // the "diffBase". If diffs grow to be so large they
                 // overweight the chattiness coming from akno messages
-                if(true) {
+                if(patchText.length() > 2000) {
                     acknowledge((int) event.getEventData().getNumber("event.idx"));
                 }
-            }
-
-            if(value) {
-                String htmlString = event.getEventData().getString("event.htmlString");
-                currentValue = htmlString;
-                setModelValue(htmlString, true);
-            } else {
-                // diff transferred
             }
         });
         domListenerRegistration.addEventData("event.patch_text");
         domListenerRegistration.addEventData("event.idx");
         domListenerRegistration.debounce(debounceTimeout);
+    }
+
+    /**
+     * Client calls this if diffs are BIG. This can for example happen
+     * on the first change, in case TinyMCE happens to remove/add
+     * line breaks in a different way than in the original content. If
+     * there would be a good way to avoid this by sanitizing the content
+     * in the server before setting the value...
+     *
+     * @param html
+     */
+    @ClientCallable
+    private void postFullHtml(String html) {
+        this.diffBase = html;
+        setModelValue(html, true);
     }
 
     private void acknowledge(int id) {

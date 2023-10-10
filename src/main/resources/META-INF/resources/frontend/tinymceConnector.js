@@ -63,16 +63,12 @@ window.Vaadin.Flow.tinymceConnector = {
 
           function computePatch() {
             c.$connector.idx++;
-            // ed.getContent() does some formatting (line breaks)
-            // which causes perf issues with the diff based data
-            // transfer, take it via innerHTML instead.
-            const editorHtml = ed.contentDocument.body.innerHTML;
-            c.$connector.syncedHtml = editorHtml;
-
             var ms_start = (new Date).getTime();
+            const editorHtml = ed.getContent();;
+            c.$connector.syncedHtml = editorHtml;
+            console.log("TIME spent for getContent():" + ((new Date).getTime() -ms_start) +"");
 
             var dmp = new diff_match_patch();
-
             const diff = dmp.diff_main(c.$connector.html, editorHtml, true);
 
             const patch_list = dmp.patch_make(c.$connector.html, editorHtml, diff);
@@ -82,9 +78,7 @@ window.Vaadin.Flow.tinymceConnector = {
             console.log("Content size:" + editorHtml.length);
             // console.log(patch_text);
 
-            var ms_end = (new Date).getTime();
-
-            console.log("TIME spent:" + (ms_end -ms_start) +"");
+            console.log("TIME spent:" + ((new Date).getTime() - ms_start) +"");
             return patch_text;
           };
 
@@ -107,16 +101,18 @@ window.Vaadin.Flow.tinymceConnector = {
 
           ed.on('input', function(e) {
             //console.log("TMCE input");
-            const event = new Event("tchange");
-
-            event.patch_text = computePatch();
-            event.idx = c.$connector.idx;
-            // TODO figure out in which case it is better to send the actual
-            // content
-            if(false) {
+            const pt = computePatch();
+            if(pt.length > c.$connector.syncedHtml.length) {
+                console.log("A lot of diffs, better sync actual value!");
+                c.$connector.html = c.$connector.syncedHtml;
+                c.$server.postFullHtml(c.$connector.syncedHtml);
+            } else {
+                const event = new Event("tchange");
+                event.patch_text = computePatch();
+                event.idx = c.$connector.idx;
+                c.dispatchEvent(event);
             }
 
-            c.dispatchEvent(event);
           });
 
         };
