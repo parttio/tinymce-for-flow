@@ -32,8 +32,6 @@ window.Vaadin.Flow.tinymceConnector = {
         baseconfig['promotion'] = false;
         baseconfig['resize'] = false;
 
-        baseconfig['base_url'] = "frontend/tinymce_addon/tinymce/"
-
         // Height defined in Java component, always just adapt to that
         baseconfig['height'] = "100%";
 

@@ -200,7 +200,7 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String> implem
      * version, or own custom script if needed.
      */
     protected void injectTinyMceScript() {
-        getUI().get().getPage().addJavaScript("frontend/tinymce_addon/tinymce/tinymce.min.js");
+        getUI().get().getPage().addJavaScript("context://frontend/tinymce_addon/tinymce/tinymce.min.js");
     }
 
     @Override
