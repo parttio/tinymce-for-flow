@@ -53,7 +53,7 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
     private String rawConfig;
     JsonObject config = Json.createObject();
     private Element ta = new Element("div");
-    private boolean advancedTinyMceCreated;
+    private boolean basicTinyMCECreated;
 
     /**
      * Creates a new TinyMce editor with shadowroot set or disabled. The shadow
@@ -210,81 +210,86 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
         setEditorContent(t);
     }
     
-    public TinyMce createAdvancedTinyMce() {
-		this.advancedTinyMceCreated = true;
+    private TinyMce createBasicTinyMce() {
 		this.setEditorContent("");
-
-		this.configure("branding", false)
-				.configure("plugins", "advlist", "autolink", "lists", "link", "image", "charmap", "preview", "anchor",
-						"searchreplace", "visualblocks", "fullscreen", "insertdatetime", "media", "table", "help",
-						"wordcount")
-				.configure("menubar", "file", "edit", "view", "insert", "format", "table", "help").configure("toolbar",
-						"undo redo | blocks | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help");
+		this.configure("branding", false);
+		this.basicTinyMCECreated = true;
+		this.configurePlugin(false, Plugin.ADVLIST, Plugin.AUTOLINK, Plugin.LISTS, Plugin.LINK, Plugin.IMAGE,
+				Plugin.CHARMAP, Plugin.PREVIEW, Plugin.ANCHOR, Plugin.SEARCHREPLACE, Plugin.VISUALBLOCKS,
+				Plugin.INSERTDATETIME, Plugin.MEDIA, Plugin.TABLE);
+		this.configureMenubar(false, Menubar.FILE, Menubar.VIEW, Menubar.EDIT, Menubar.INSERT, Menubar.FORMAT,
+				Menubar.TABLE, Menubar.HELP);
+		this.configureToolbar(false, Toolbar.UNDO, Toolbar.REDO, Toolbar.SEPARATOR, Toolbar.BLOCKS, Toolbar.SEPARATOR,
+				Toolbar.BOLD, Toolbar.ITALIC, Toolbar.SEPARATOR, Toolbar.ALIGNLEFT, Toolbar.ALIGNCENTER,
+				Toolbar.ALIGNRIGHT, Toolbar.ALIGNJUSTIFY, Toolbar.SEPARATOR, Toolbar.BULLIST, Toolbar.NUMLIST,
+				Toolbar.OUTDENT, Toolbar.INDENT);
 		return this;
 
 	}
-    
-    public TinyMce configureToAdvanced(String configurationKey, String value) {
-		if (!advancedTinyMceCreated) {
-			createAdvancedTinyMce();
-		}
-		JsonValue jsonValue = config.get(configurationKey);
-		if (jsonValue != null) {
-			if (jsonValue instanceof JsonArray) {
-				JsonArray array = (JsonArray) jsonValue;
-				array.set(array.length(), value);
-				config.put(configurationKey, array);
-			} else {
-				config.put(configurationKey, jsonValue.asString().concat(value));
-			}
 
+	public TinyMce configurePlugin(boolean basicTinyMCE, Plugin... plugins) {
+		if (basicTinyMCE && !basicTinyMCECreated) {
+			createBasicTinyMce();
+		}
+
+		JsonArray jsonArray = config.get("plugins");
+		int initialIndex = 0;
+
+		if (jsonArray != null) {
+			initialIndex = jsonArray.length();
 		} else {
-			config.put(configurationKey, value);
+			jsonArray = Json.createArray();
 		}
 
-		return this;
+		for (int i = initialIndex; i < plugins.length; i++) {
+			jsonArray.set(i, plugins[i].pluginLabel);
+		}
 
+		config.put("plugins", jsonArray);
+		return this;
 	}
 
-	public TinyMce configureToAdvanced(String configurationKey, String... value) {
-		if (!advancedTinyMceCreated) {
-			createAdvancedTinyMce();
+	public TinyMce configureMenubar(boolean basicTinyMCE, Menubar... menubars) {
+		if (basicTinyMCE && !basicTinyMCECreated) {
+			createBasicTinyMce();
 		}
-		JsonValue jsonValue = config.get(configurationKey);
-		if (jsonValue != null) {
-			if (jsonValue instanceof JsonArray) {
-				JsonArray array = (JsonArray) jsonValue;
-				int initialLength = array.length();
-				for (int i = 0; i < value.length; i++) {
-					array.set(initialLength + i, value[i]);
-				}
-				config.put(configurationKey, array);
-			}
+
+		JsonArray jsonArray = config.get("menubar");
+		int initialIndex = 0;
+
+		if (jsonArray != null) {
+			initialIndex = jsonArray.length();
 		} else {
-			JsonArray array = Json.createArray();
-			for (int i = 0; i < value.length; i++) {
-				array.set(i, value[i]);
-			}
-			config.put(configurationKey, array);
+			jsonArray = Json.createArray();
 		}
 
-		return this;
-
-	}
-
-	public TinyMce configureToAdvanced(String configurationKey, boolean value) {
-		if (!advancedTinyMceCreated) {
-			createAdvancedTinyMce();
+		for (int i = initialIndex; i < menubars.length; i++) {
+			jsonArray.set(i, menubars[i].menubarLabel);
 		}
-		config.put(configurationKey, value);
+
+		config.put("menubar", jsonArray);
 		return this;
 	}
 
-	public TinyMce configureToAdvanced(String configurationKey, double value) {
-		if (!advancedTinyMceCreated) {
-			createAdvancedTinyMce();
+	public TinyMce configureToolbar(boolean basicTinyMCE, Toolbar... toolbars) {
+		if (basicTinyMCE && !basicTinyMCECreated) {
+			createBasicTinyMce();
 		}
-		config.put(configurationKey, value);
+
+		JsonArray jsonArray = config.get("toolbar");
+		int initialIndex = 0;
+
+		if (jsonArray != null) {
+			initialIndex = jsonArray.length();
+		} else {
+			jsonArray = Json.createArray();
+		}
+
+		for (int i = initialIndex; i < toolbars.length; i++) {
+			jsonArray.set(i, toolbars[i].toolbarLabel);
+		}
+
+		config.put("toolbar", jsonArray);
 		return this;
 	}
 
