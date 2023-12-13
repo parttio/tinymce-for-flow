@@ -30,6 +30,8 @@ import com.vaadin.flow.function.SerializableConsumer;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
+import elemental.json.JsonValue;
+
 import java.util.UUID;
 
 /**
@@ -51,6 +53,7 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
     private String rawConfig;
     JsonObject config = Json.createObject();
     private Element ta = new Element("div");
+    private boolean advancedTinyMceCreated;
 
     /**
      * Creates a new TinyMce editor with shadowroot set or disabled. The shadow
@@ -206,6 +209,84 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
     protected void setPresentationValue(String t) {
         setEditorContent(t);
     }
+    
+    public TinyMce createAdvancedTinyMce() {
+		this.advancedTinyMceCreated = true;
+		this.setEditorContent("");
+
+		this.configure("branding", false)
+				.configure("plugins", "advlist", "autolink", "lists", "link", "image", "charmap", "preview", "anchor",
+						"searchreplace", "visualblocks", "fullscreen", "insertdatetime", "media", "table", "help",
+						"wordcount")
+				.configure("menubar", "file", "edit", "view", "insert", "format", "table", "help").configure("toolbar",
+						"undo redo | blocks | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help");
+		return this;
+
+	}
+    
+    public TinyMce configureToAdvanced(String configurationKey, String value) {
+		if (!advancedTinyMceCreated) {
+			createAdvancedTinyMce();
+		}
+		JsonValue jsonValue = config.get(configurationKey);
+		if (jsonValue != null) {
+			if (jsonValue instanceof JsonArray) {
+				JsonArray array = (JsonArray) jsonValue;
+				array.set(array.length(), value);
+				config.put(configurationKey, array);
+			} else {
+				config.put(configurationKey, jsonValue.asString().concat(value));
+			}
+
+		} else {
+			config.put(configurationKey, value);
+		}
+
+		return this;
+
+	}
+
+	public TinyMce configureToAdvanced(String configurationKey, String... value) {
+		if (!advancedTinyMceCreated) {
+			createAdvancedTinyMce();
+		}
+		JsonValue jsonValue = config.get(configurationKey);
+		if (jsonValue != null) {
+			if (jsonValue instanceof JsonArray) {
+				JsonArray array = (JsonArray) jsonValue;
+				int initialLength = array.length();
+				for (int i = 0; i < value.length; i++) {
+					array.set(initialLength + i, value[i]);
+				}
+				config.put(configurationKey, array);
+			}
+		} else {
+			JsonArray array = Json.createArray();
+			for (int i = 0; i < value.length; i++) {
+				array.set(i, value[i]);
+			}
+			config.put(configurationKey, array);
+		}
+
+		return this;
+
+	}
+
+	public TinyMce configureToAdvanced(String configurationKey, boolean value) {
+		if (!advancedTinyMceCreated) {
+			createAdvancedTinyMce();
+		}
+		config.put(configurationKey, value);
+		return this;
+	}
+
+	public TinyMce configureToAdvanced(String configurationKey, double value) {
+		if (!advancedTinyMceCreated) {
+			createAdvancedTinyMce();
+		}
+		config.put(configurationKey, value);
+		return this;
+	}
 
 
 }
