@@ -45,7 +45,8 @@ import java.util.UUID;
  */
 @Tag("div")
 @JavaScript("./tinymceConnector.js")
-public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implements HasSize {
+public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
+        implements HasSize {
 
     private String id;
     private boolean initialContentSent;
@@ -62,20 +63,21 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
      * hand, the shadow root must not be on when for example used in inline
      * mode.
      * 
-     * @param shadowRoot true of shadow root hack should be used
+     * @param shadowRoot
+     *            true of shadow root hack should be used
      */
     public TinyMce(boolean shadowRoot) {
         super("");
         setHeight("500px");
         ta.getStyle().set("height", "100%");
-        if(shadowRoot) {
+        if (shadowRoot) {
             ShadowRoot shadow = getElement().attachShadow();
             shadow.appendChild(ta);
         } else {
             getElement().appendChild(ta);
         }
     }
-    
+
     public TinyMce() {
         this(false);
     }
@@ -96,7 +98,7 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
         ta.setAttribute("id", id);
         ta.setProperty("innerHTML", currentValue);
         super.onAttach(attachEvent);
-        if(attachEvent.isInitialAttach())
+        if (attachEvent.isInitialAttach())
             injectTinyMceScript();
         initConnector();
     }
@@ -105,16 +107,18 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
     protected void onDetach(DetachEvent detachEvent) {
         super.onDetach(detachEvent);
         initialContentSent = false;
-        // save the current value to the dom element in case the component gets reattached
+        // save the current value to the dom element in case the component gets
+        // reattached
     }
 
     @SuppressWarnings("deprecation")
     private void initConnector() {
         this.initialContentSent = true;
-        
+
         runBeforeClientResponse(ui -> {
-            ui.getPage().executeJs("window.Vaadin.Flow.tinymceConnector.initLazy($0, $1, $2, $3)", rawConfig,
-                    getElement(), ta, config);
+            ui.getPage().executeJs(
+                    "window.Vaadin.Flow.tinymceConnector.initLazy($0, $1, $2, $3)",
+                    rawConfig, getElement(), ta, config);
         });
     }
 
@@ -136,40 +140,40 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
     public void setConfig(String jsonConfig) {
         this.rawConfig = jsonConfig;
     }
-    
+
     public TinyMce configure(String configurationKey, String value) {
-    	config.put(configurationKey, value);
+        config.put(configurationKey, value);
         return this;
     }
-    
+
     public TinyMce configure(String configurationKey, String... value) {
         JsonArray array = Json.createArray();
         for (int i = 0; i < value.length; i++) {
             array.set(i, value[i]);
         }
-    	config.put(configurationKey, array);
+        config.put(configurationKey, array);
         return this;
     }
 
-
     public TinyMce configure(String configurationKey, boolean value) {
-    	config.put(configurationKey, value);
+        config.put(configurationKey, value);
         return this;
     }
 
     public TinyMce configure(String configurationKey, double value) {
-    	config.put(configurationKey, value);
+        config.put(configurationKey, value);
         return this;
     }
 
     /**
      * Replaces text in the editors selection (can be just a caret position).
      *
-     * @param htmlString the html snippet to be inserted
+     * @param htmlString
+     *            the html snippet to be inserted
      */
     public void replaceSelectionContent(String htmlString) {
-        runBeforeClientResponse(ui -> getElement()
-                .callJsFunction("$connector.replaceSelectionContent", htmlString));
+        runBeforeClientResponse(ui -> getElement().callJsFunction(
+                "$connector.replaceSelectionContent", htmlString));
     }
 
     /**
@@ -180,16 +184,18 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
      */
     protected void injectTinyMceScript() {
         int majorVersion = com.vaadin.flow.server.Version.getMajorVersion();
-        if(majorVersion > 2) {
-            getUI().get().getPage().addJavaScript("frontend/tinymce_addon/tinymce/tinymce.js");
+        if (majorVersion > 2) {
+            getUI().get().getPage()
+                    .addJavaScript("frontend/tinymce_addon/tinymce/tinymce.js");
         } else {
-            getUI().get().getPage().addJavaScript("tinymce_addon/tinymce/tinymce.js");
+            getUI().get().getPage()
+                    .addJavaScript("tinymce_addon/tinymce/tinymce.js");
         }
     }
 
     public void focus() {
-        runBeforeClientResponse(ui -> getElement()
-                .callJsFunction("$connector.focus"));
+        runBeforeClientResponse(
+                ui -> getElement().callJsFunction("$connector.focus"));
     }
 
     @Override
@@ -198,7 +204,7 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
         runBeforeClientResponse(ui -> getElement()
                 .callJsFunction("$connector.setEnabled", enabled));
     }
-    
+
     @Override
     public void setReadOnly(boolean readOnly) {
         super.setReadOnly(readOnly);
@@ -209,85 +215,90 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
     protected void setPresentationValue(String t) {
         setEditorContent(t);
     }
-    
-	private TinyMce createBasicTinyMce() {
-		this.setEditorContent("");
-		this.configure("branding", false);
-		this.basicTinyMCECreated = true;
-		this.configurePlugin(false, Plugin.ADVLIST, Plugin.AUTOLINK, Plugin.LISTS, Plugin.SEARCHREPLACE);
-		this.configureMenubar(false, Menubar.FILE, Menubar.EDIT, Menubar.VIEW, Menubar.FORMAT);
-		this.configureToolbar(false, Toolbar.UNDO, Toolbar.REDO, Toolbar.SEPARATOR, Toolbar.FORMATSELECT,
-				Toolbar.SEPARATOR, Toolbar.BOLD, Toolbar.ITALIC, Toolbar.SEPARATOR, Toolbar.ALIGNLEFT,
-				Toolbar.ALIGNCENTER, Toolbar.ALIGNRIGHT, Toolbar.ALIGNJUSTIFY, Toolbar.SEPARATOR, Toolbar.OUTDENT,
-				Toolbar.INDENT);
-		return this;
 
-	}
+    private TinyMce createBasicTinyMce() {
+        this.setEditorContent("");
+        this.configure("branding", false);
+        this.basicTinyMCECreated = true;
+        this.configurePlugin(false, Plugin.ADVLIST, Plugin.AUTOLINK,
+                Plugin.LISTS, Plugin.SEARCHREPLACE);
+        this.configureMenubar(false, Menubar.FILE, Menubar.EDIT, Menubar.VIEW,
+                Menubar.FORMAT);
+        this.configureToolbar(false, Toolbar.UNDO, Toolbar.REDO,
+                Toolbar.SEPARATOR, Toolbar.FORMATSELECT, Toolbar.SEPARATOR,
+                Toolbar.BOLD, Toolbar.ITALIC, Toolbar.SEPARATOR,
+                Toolbar.ALIGNLEFT, Toolbar.ALIGNCENTER, Toolbar.ALIGNRIGHT,
+                Toolbar.ALIGNJUSTIFY, Toolbar.SEPARATOR, Toolbar.OUTDENT,
+                Toolbar.INDENT);
+        return this;
 
-	public TinyMce configurePlugin(boolean basicTinyMCE, Plugin... plugins) {
-		if (basicTinyMCE && !basicTinyMCECreated) {
-			createBasicTinyMce();
-		}
+    }
 
-		JsonArray jsonArray = config.get("plugins");
-		int initialIndex = 0;
+    public TinyMce configurePlugin(boolean basicTinyMCE, Plugin... plugins) {
+        if (basicTinyMCE && !basicTinyMCECreated) {
+            createBasicTinyMce();
+        }
 
-		if (jsonArray != null) {
-			initialIndex = jsonArray.length();
-		} else {
-			jsonArray = Json.createArray();
-		}
+        JsonArray jsonArray = config.get("plugins");
+        int initialIndex = 0;
 
-		for (int i = 0; i < plugins.length; i++) {
-			jsonArray.set(initialIndex, plugins[i].pluginLabel);
-			initialIndex++;
-		}
+        if (jsonArray != null) {
+            initialIndex = jsonArray.length();
+        } else {
+            jsonArray = Json.createArray();
+        }
 
-		config.put("plugins", jsonArray);
-		return this;
-	}
+        for (int i = 0; i < plugins.length; i++) {
+            jsonArray.set(initialIndex, plugins[i].pluginLabel);
+            initialIndex++;
+        }
 
-	public TinyMce configureMenubar(boolean basicTinyMCE, Menubar... menubars) {
-		if (basicTinyMCE && !basicTinyMCECreated) {
-			createBasicTinyMce();
-		}
+        config.put("plugins", jsonArray);
+        return this;
+    }
 
-		JsonArray jsonArray = config.get("menubar");
-		int initialIndex = 0;
+    public TinyMce configureMenubar(boolean basicTinyMCE, Menubar... menubars) {
+        if (basicTinyMCE && !basicTinyMCECreated) {
+            createBasicTinyMce();
+        }
 
-		if (jsonArray != null) {
-			initialIndex = jsonArray.length();
-		} else {
-			jsonArray = Json.createArray();
-		}
+        JsonArray jsonArray = config.get("menubar");
+        int initialIndex = 0;
 
-		for (int i = 0; i < menubars.length; i++) {
-			jsonArray.set(initialIndex, menubars[i].menubarLabel);
-			initialIndex++;
-		}
+        if (jsonArray != null) {
+            initialIndex = jsonArray.length();
+        } else {
+            jsonArray = Json.createArray();
+        }
 
-		config.put("menubar", jsonArray);
-		return this;
-	}
+        for (int i = 0; i < menubars.length; i++) {
+            jsonArray.set(initialIndex, menubars[i].menubarLabel);
+            initialIndex++;
+        }
 
-	public TinyMce configureToolbar(boolean basicTinyMCE, Toolbar... toolbars) {
-		if (basicTinyMCE && !basicTinyMCECreated) {
-			createBasicTinyMce();
-		}
+        config.put("menubar", jsonArray);
+        return this;
+    }
 
-		JsonValue jsonValue = config.get("toolbar");
-		String toolbarStr = "";
+    public TinyMce configureToolbar(boolean basicTinyMCE, Toolbar... toolbars) {
+        if (basicTinyMCE && !basicTinyMCECreated) {
+            createBasicTinyMce();
+        }
 
-		if (jsonValue != null) {
-			toolbarStr = toolbarStr.concat(jsonValue.asString());
-		}
+        JsonValue jsonValue = config.get("toolbar");
+        String toolbarStr = "";
 
-		for (int i = 0; i < toolbars.length; i++) {
-			toolbarStr = toolbarStr.concat(" ").concat(toolbars[i].toolbarLabel).concat(" ");
-		}
+        if (jsonValue != null) {
+            toolbarStr = toolbarStr.concat(jsonValue.asString());
+        }
 
-		config.put("toolbar", toolbarStr);
-		return this;
-	}
+        for (int i = 0; i < toolbars.length; i++) {
+            toolbarStr = toolbarStr.concat(" ").concat(toolbars[i].toolbarLabel)
+                    .concat(" ");
+        }
+
+        config.put("toolbar", toolbarStr);
+        return this;
+    }
 
 }
