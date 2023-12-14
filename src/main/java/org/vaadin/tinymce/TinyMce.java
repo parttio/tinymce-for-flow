@@ -210,19 +210,16 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
         setEditorContent(t);
     }
     
-    private TinyMce createBasicTinyMce() {
+	private TinyMce createBasicTinyMce() {
 		this.setEditorContent("");
 		this.configure("branding", false);
 		this.basicTinyMCECreated = true;
-		this.configurePlugin(false, Plugin.ADVLIST, Plugin.AUTOLINK, Plugin.LISTS, Plugin.LINK, Plugin.IMAGE,
-				Plugin.CHARMAP, Plugin.PREVIEW, Plugin.ANCHOR, Plugin.SEARCHREPLACE, Plugin.VISUALBLOCKS,
-				Plugin.INSERTDATETIME, Plugin.MEDIA, Plugin.TABLE);
-		this.configureMenubar(false, Menubar.FILE, Menubar.VIEW, Menubar.EDIT, Menubar.INSERT, Menubar.FORMAT,
-				Menubar.TABLE, Menubar.HELP);
-		this.configureToolbar(false, Toolbar.UNDO, Toolbar.REDO, Toolbar.SEPARATOR, Toolbar.BLOCKS, Toolbar.SEPARATOR,
-				Toolbar.BOLD, Toolbar.ITALIC, Toolbar.SEPARATOR, Toolbar.ALIGNLEFT, Toolbar.ALIGNCENTER,
-				Toolbar.ALIGNRIGHT, Toolbar.ALIGNJUSTIFY, Toolbar.SEPARATOR, Toolbar.BULLIST, Toolbar.NUMLIST,
-				Toolbar.OUTDENT, Toolbar.INDENT);
+		this.configurePlugin(false, Plugin.ADVLIST, Plugin.AUTOLINK, Plugin.LISTS, Plugin.SEARCHREPLACE);
+		this.configureMenubar(false, Menubar.FILE, Menubar.EDIT, Menubar.VIEW, Menubar.FORMAT);
+		this.configureToolbar(false, Toolbar.UNDO, Toolbar.REDO, Toolbar.SEPARATOR, Toolbar.FORMATSELECT,
+				Toolbar.SEPARATOR, Toolbar.BOLD, Toolbar.ITALIC, Toolbar.SEPARATOR, Toolbar.ALIGNLEFT,
+				Toolbar.ALIGNCENTER, Toolbar.ALIGNRIGHT, Toolbar.ALIGNJUSTIFY, Toolbar.SEPARATOR, Toolbar.OUTDENT,
+				Toolbar.INDENT);
 		return this;
 
 	}
@@ -241,8 +238,9 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
 			jsonArray = Json.createArray();
 		}
 
-		for (int i = initialIndex; i < plugins.length; i++) {
-			jsonArray.set(i, plugins[i].pluginLabel);
+		for (int i = 0; i < plugins.length; i++) {
+			jsonArray.set(initialIndex, plugins[i].pluginLabel);
+			initialIndex++;
 		}
 
 		config.put("plugins", jsonArray);
@@ -263,8 +261,9 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
 			jsonArray = Json.createArray();
 		}
 
-		for (int i = initialIndex; i < menubars.length; i++) {
-			jsonArray.set(i, menubars[i].menubarLabel);
+		for (int i = 0; i < menubars.length; i++) {
+			jsonArray.set(initialIndex, menubars[i].menubarLabel);
+			initialIndex++;
 		}
 
 		config.put("menubar", jsonArray);
@@ -276,22 +275,19 @@ public class TinyMce extends AbstractCompositeField<Div,TinyMce,String> implemen
 			createBasicTinyMce();
 		}
 
-		JsonArray jsonArray = config.get("toolbar");
-		int initialIndex = 0;
+		JsonValue jsonValue = config.get("toolbar");
+		String toolbarStr = "";
 
-		if (jsonArray != null) {
-			initialIndex = jsonArray.length();
-		} else {
-			jsonArray = Json.createArray();
+		if (jsonValue != null) {
+			toolbarStr = toolbarStr.concat(jsonValue.asString());
 		}
 
-		for (int i = initialIndex; i < toolbars.length; i++) {
-			jsonArray.set(i, toolbars[i].toolbarLabel);
+		for (int i = 0; i < toolbars.length; i++) {
+			toolbarStr = toolbarStr.concat(" ").concat(toolbars[i].toolbarLabel).concat(" ");
 		}
 
-		config.put("toolbar", jsonArray);
+		config.put("toolbar", toolbarStr);
 		return this;
 	}
-
 
 }

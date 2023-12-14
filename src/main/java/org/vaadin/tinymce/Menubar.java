@@ -1,8 +1,8 @@
 package org.vaadin.tinymce;
 
 public enum Menubar {
-	FILE("File"), EDIT("Edit"), VIEW("View"), INSERT("Insert"), FORMAT("Format"), TOOLS("Tools"), TABLE("Table"),
-	HELP("Help");
+	FILE("file"), EDIT("edit"), VIEW("view"), INSERT("insert"), FORMAT("format"), TOOLS("tools"), TABLE("table"),
+	HELP("help");
 
 	public final String menubarLabel;
 
