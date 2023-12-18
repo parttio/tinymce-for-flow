@@ -19,7 +19,15 @@ public enum Toolbar {
                                                                                                                             "indent"), REMOVEFORMAT(
                                                                                                                                     "removeformat"), HELP(
                                                                                                                                             "help"), TABLE(
-                                                                                                                                                    "table")
+                                                                                                                                                    "table"), FONTSELECT(
+                                                                                                                                                            "FONTSELECT"), FONTSIZESELECT(
+                                                                                                                                                                    "FONTSIZESELECT"), EMOTICONS(
+                                                                                                                                                                            "emoticons"), LINK(
+                                                                                                                                                                                    "link"), IMAGE(
+                                                                                                                                                                                            "image"), MEDIA(
+                                                                                                                                                                                                    "media"), PRINT(
+                                                                                                                                                                                                            "print"), INSERTDATETIME(
+                                                                                                                                                                                                                    "insertdatetime")
 
     ;
 
