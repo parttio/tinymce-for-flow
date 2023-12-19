@@ -221,14 +221,14 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         this.configure("branding", false);
         this.basicTinyMCECreated = true;
         this.configurePlugin(false, Plugin.ADVLIST, Plugin.AUTOLINK,
-                Plugin.LISTS, Plugin.SEARCHREPLACE);
+                Plugin.LISTS, Plugin.SEARCH_REPLACE);
         this.configureMenubar(false, Menubar.FILE, Menubar.EDIT, Menubar.VIEW,
                 Menubar.FORMAT);
         this.configureToolbar(false, Toolbar.UNDO, Toolbar.REDO,
-                Toolbar.SEPARATOR, Toolbar.FORMATSELECT, Toolbar.SEPARATOR,
+                Toolbar.SEPARATOR, Toolbar.FORMAT_SELECT, Toolbar.SEPARATOR,
                 Toolbar.BOLD, Toolbar.ITALIC, Toolbar.SEPARATOR,
-                Toolbar.ALIGNLEFT, Toolbar.ALIGNCENTER, Toolbar.ALIGNRIGHT,
-                Toolbar.ALIGNJUSTIFY, Toolbar.SEPARATOR, Toolbar.OUTDENT,
+                Toolbar.ALIGN_LEFT, Toolbar.ALIGN_CENTER, Toolbar.ALIGN_RIGHT,
+                Toolbar.ALIGN_JUSTIFY, Toolbar.SEPARATOR, Toolbar.OUTDENT,
                 Toolbar.INDENT);
         return this;
 
