@@ -58,6 +58,16 @@
                 <scope>import</scope>
                 <version>24.1.8</version>
             </dependency>
+            <!-- The add-on itself does not depend on Spring Boot.
+                 This is to simplify testing setup only, to get compatible deps
+                 needed for testing/development. -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>3.2.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -72,6 +82,28 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-spring-boot-starter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.imgscalr</groupId>
+            <artifactId>imgscalr-lib</artifactId>
+            <version>4.2</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>in.virit</groupId>
@@ -96,6 +128,16 @@
             <version>5.8.1</version>
             <scope>test</scope>
         </dependency>
+
+        <!--This can be handy in development phase, if you have no jRebel
+        , but it currently breaks e2e tests -> commented out. -->
+        <!--
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+        </dependency>
+        -->
     </dependencies>
 
     <build>

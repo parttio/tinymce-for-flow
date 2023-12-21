@@ -8,17 +8,17 @@ import in.virit.mopo.Mopo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class MopoSmokeIT {
 
-    private final int port = 9998;
-
-    private final String rootUrl = "http://localhost:" + port + "/";
+    @LocalServerPort
+    private int port;
 
     static Playwright playwright = Playwright.create();
-
-    static {
-    }
 
     private Browser browser;
     private Page page;
@@ -45,6 +45,7 @@ public class MopoSmokeIT {
 
     @Test
     public void smokeTest() {
+        String rootUrl = "http://localhost:" + port + "/";
         mopo.getViewsReportedByDevMode(browser, rootUrl).forEach(viewName -> {
             String url = rootUrl + viewName;
             page.navigate(url);
