@@ -39,6 +39,7 @@ import com.vaadin.flow.shared.Registration;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
+import elemental.json.JsonValue;
 
 import java.util.UUID;
 
@@ -53,7 +54,8 @@ import java.util.UUID;
  */
 @Tag("div")
 @JavaScript("./tinymceConnector.js")
-public class TinyMce extends AbstractCompositeField<Div, TinyMce, String> implements HasSize, Focusable<TinyMce> {
+public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
+        implements HasSize, Focusable<TinyMce> {
 
     private final DomListenerRegistration domListenerRegistration;
     private String id;
@@ -64,6 +66,7 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String> implem
     private Element ta = new Element("div");
 
     private int debounceTimeout = 5000;
+    private boolean basicTinyMCECreated;
 
     /**
      * Creates a new TinyMce editor with shadowroot set or disabled. The shadow
@@ -72,7 +75,8 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String> implem
      * hand, the shadow root must not be on when for example used in inline
      * mode.
      *
-     * @param shadowRoot true of shadow root hack should be used
+     * @param shadowRoot
+     *            true of shadow root hack should be used
      */
     public TinyMce(boolean shadowRoot) {
         super("");
@@ -84,19 +88,25 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String> implem
         } else {
             getElement().appendChild(ta);
         }
-        domListenerRegistration = getElement().addEventListener("tchange", (DomEventListener) event -> {
-            boolean value = event.getEventData().hasKey("event.htmlString");
-            String htmlString = event.getEventData().getString("event.htmlString");
-            currentValue = htmlString;
-            setModelValue(htmlString, true);
-        });
+        domListenerRegistration = getElement().addEventListener("tchange",
+                (DomEventListener) event -> {
+                    boolean value = event.getEventData()
+                            .hasKey("event.htmlString");
+                    String htmlString = event.getEventData()
+                            .getString("event.htmlString");
+                    currentValue = htmlString;
+                    setModelValue(htmlString, true);
+                });
         domListenerRegistration.addEventData("event.htmlString");
         domListenerRegistration.debounce(debounceTimeout);
     }
 
     /**
-     * Sets the debounce timeout for the value change event. The default is 5000.
-     * @param debounceTimeout the debounce timeout in milliseconds
+     * Sets the debounce timeout for the value change event. The default is
+     * 5000.
+     * 
+     * @param debounceTimeout
+     *            the debounce timeout in milliseconds
      */
     public void setDebounceTimeout(int debounceTimeout) {
         this.debounceTimeout = debounceTimeout;
@@ -132,7 +142,8 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String> implem
     protected void onDetach(DetachEvent detachEvent) {
         super.onDetach(detachEvent);
         initialContentSent = false;
-        // save the current value to the dom element in case the component gets reattached
+        // save the current value to the dom element in case the component gets
+        // reattached
     }
 
     @SuppressWarnings("deprecation")
@@ -140,8 +151,9 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String> implem
         this.initialContentSent = true;
 
         runBeforeClientResponse(ui -> {
-            ui.getPage().executeJs("window.Vaadin.Flow.tinymceConnector.initLazy($0, $1, $2, $3)", rawConfig,
-                    getElement(), ta, config);
+            ui.getPage().executeJs(
+                    "window.Vaadin.Flow.tinymceConnector.initLazy($0, $1, $2, $3)",
+                    rawConfig, getElement(), ta, config);
         });
     }
 
@@ -172,7 +184,6 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String> implem
         return this;
     }
 
-
     public TinyMce configure(String configurationKey, boolean value) {
         config.put(configurationKey, value);
         return this;
@@ -186,11 +197,12 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String> implem
     /**
      * Replaces text in the editors selection (can be just a caret position).
      *
-     * @param htmlString the html snippet to be inserted
+     * @param htmlString
+     *            the html snippet to be inserted
      */
     public void replaceSelectionContent(String htmlString) {
-        runBeforeClientResponse(ui -> getElement()
-                .callJsFunction("$connector.replaceSelectionContent", htmlString));
+        runBeforeClientResponse(ui -> getElement().callJsFunction(
+                "$connector.replaceSelectionContent", htmlString));
     }
 
     /**
@@ -200,30 +212,38 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String> implem
      * version, or own custom script if needed.
      */
     protected void injectTinyMceScript() {
-        getUI().get().getPage().addJavaScript("context://frontend/tinymce_addon/tinymce/tinymce.min.js");
+        getUI().get().getPage().addJavaScript(
+                "context://frontend/tinymce_addon/tinymce/tinymce.min.js");
     }
 
     @Override
     public void focus() {
-        runBeforeClientResponse(ui -> getElement()
-                .callJsFunction("$connector.focus"));
+        runBeforeClientResponse(
+                ui -> getElement().callJsFunction("$connector.focus"));
     }
 
     @Override
-    public Registration addFocusListener(ComponentEventListener<FocusEvent<TinyMce>> listener) {
-        DomListenerRegistration domListenerRegistration = getElement().addEventListener("tfocus", event -> listener.onComponentEvent(new FocusEvent<>(this, false)));
+    public Registration addFocusListener(
+            ComponentEventListener<FocusEvent<TinyMce>> listener) {
+        DomListenerRegistration domListenerRegistration = getElement()
+                .addEventListener("tfocus", event -> listener
+                        .onComponentEvent(new FocusEvent<>(this, false)));
         return domListenerRegistration;
     }
 
     @Override
-    public Registration addBlurListener(ComponentEventListener<BlurEvent<TinyMce>> listener) {
-        DomListenerRegistration domListenerRegistration = getElement().addEventListener("tblur", event -> listener.onComponentEvent(new BlurEvent<>(this, false)));
+    public Registration addBlurListener(
+            ComponentEventListener<BlurEvent<TinyMce>> listener) {
+        DomListenerRegistration domListenerRegistration = getElement()
+                .addEventListener("tblur", event -> listener
+                        .onComponentEvent(new BlurEvent<>(this, false)));
         return domListenerRegistration;
     }
 
     @Override
     public void blur() {
-        throw new RuntimeException("Not implemented, TinyMce does not support programmatic blur.");
+        throw new RuntimeException(
+                "Not implemented, TinyMce does not support programmatic blur.");
     }
 
     @Override
@@ -244,5 +264,89 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String> implem
         setEditorContent(t);
     }
 
+    private TinyMce createBasicTinyMce() {
+        this.setEditorContent("");
+        this.configure("branding", false);
+        this.basicTinyMCECreated = true;
+        this.configurePlugin(false, Plugin.ADVLIST, Plugin.AUTOLINK,
+                Plugin.LISTS, Plugin.SEARCH_REPLACE);
+        this.configureMenubar(false, Menubar.FILE, Menubar.EDIT, Menubar.VIEW,
+                Menubar.FORMAT);
+        this.configureToolbar(false, Toolbar.UNDO, Toolbar.REDO,
+                Toolbar.SEPARATOR, Toolbar.FORMAT_SELECT, Toolbar.SEPARATOR,
+                Toolbar.BOLD, Toolbar.ITALIC, Toolbar.SEPARATOR,
+                Toolbar.ALIGN_LEFT, Toolbar.ALIGN_CENTER, Toolbar.ALIGN_RIGHT,
+                Toolbar.ALIGN_JUSTIFY, Toolbar.SEPARATOR, Toolbar.OUTDENT,
+                Toolbar.INDENT);
+        return this;
+
+    }
+
+    public TinyMce configurePlugin(boolean basicTinyMCE, Plugin... plugins) {
+        if (basicTinyMCE && !basicTinyMCECreated) {
+            createBasicTinyMce();
+        }
+
+        JsonArray jsonArray = config.get("plugins");
+        int initialIndex = 0;
+
+        if (jsonArray != null) {
+            initialIndex = jsonArray.length();
+        } else {
+            jsonArray = Json.createArray();
+        }
+
+        for (int i = 0; i < plugins.length; i++) {
+            jsonArray.set(initialIndex, plugins[i].pluginLabel);
+            initialIndex++;
+        }
+
+        config.put("plugins", jsonArray);
+        return this;
+    }
+
+    public TinyMce configureMenubar(boolean basicTinyMCE, Menubar... menubars) {
+        if (basicTinyMCE && !basicTinyMCECreated) {
+            createBasicTinyMce();
+        }
+
+        JsonArray jsonArray = config.get("menubar");
+        int initialIndex = 0;
+
+        if (jsonArray != null) {
+            initialIndex = jsonArray.length();
+        } else {
+            jsonArray = Json.createArray();
+        }
+
+        for (int i = 0; i < menubars.length; i++) {
+            jsonArray.set(initialIndex, menubars[i].menubarLabel);
+            initialIndex++;
+        }
+
+        config.put("menubar", jsonArray);
+        return this;
+    }
+
+    public TinyMce configureToolbar(boolean basicTinyMCE, Toolbar... toolbars) {
+        if (basicTinyMCE && !basicTinyMCECreated) {
+            createBasicTinyMce();
+        }
+
+        JsonValue jsonValue = config.get("toolbar");
+        String toolbarStr = "";
+
+        if (jsonValue != null) {
+            toolbarStr = toolbarStr.concat(jsonValue.asString());
+        }
+
+        for (int i = 0; i < toolbars.length; i++) {
+            toolbarStr = toolbarStr.concat(" ").concat(toolbars[i].toolbarLabel)
+                    .concat(" ");
+        }
+
+        config.put("toolbar", toolbarStr);
+        return this;
+    }
 
 }
