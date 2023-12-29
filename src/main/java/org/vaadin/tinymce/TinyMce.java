@@ -45,6 +45,7 @@ import java.util.UUID;
  */
 @Tag("div")
 @JavaScript("./tinymceConnector.js")
+@JavaScript("context://frontend/tinymce_addon/tinymce/tinymce.js")
 public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         implements HasSize {
 
@@ -98,8 +99,8 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         ta.setAttribute("id", id);
         ta.setProperty("innerHTML", currentValue);
         super.onAttach(attachEvent);
-        if (attachEvent.isInitialAttach())
-            injectTinyMceScript();
+        // if (attachEvent.isInitialAttach())
+        // injectTinyMceScript();
         initConnector();
     }
 
@@ -113,12 +114,12 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
 
     @SuppressWarnings("deprecation")
     private void initConnector() {
-        this.initialContentSent = true;
 
         runBeforeClientResponse(ui -> {
             ui.getPage().executeJs(
                     "window.Vaadin.Flow.tinymceConnector.initLazy($0, $1, $2, $3)",
-                    rawConfig, getElement(), ta, config);
+                    rawConfig, getElement(), ta, config)
+                    .then(res -> initialContentSent = true);
         });
     }
 
@@ -174,23 +175,6 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
     public void replaceSelectionContent(String htmlString) {
         runBeforeClientResponse(ui -> getElement().callJsFunction(
                 "$connector.replaceSelectionContent", htmlString));
-    }
-
-    /**
-     * Injects actual editor script to the host page from the add-on bundle.
-     * <p>
-     * Override this with an empty implementation if you to use the cloud hosted
-     * version, or own custom script if needed.
-     */
-    protected void injectTinyMceScript() {
-        int majorVersion = com.vaadin.flow.server.Version.getMajorVersion();
-        if (majorVersion > 2) {
-            getUI().get().getPage()
-                    .addJavaScript("frontend/tinymce_addon/tinymce/tinymce.js");
-        } else {
-            getUI().get().getPage()
-                    .addJavaScript("tinymce_addon/tinymce/tinymce.js");
-        }
     }
 
     public void focus() {
