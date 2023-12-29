@@ -99,8 +99,6 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         ta.setAttribute("id", id);
         ta.setProperty("innerHTML", currentValue);
         super.onAttach(attachEvent);
-        // if (attachEvent.isInitialAttach())
-        // injectTinyMceScript();
         initConnector();
     }
 
@@ -118,8 +116,9 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         runBeforeClientResponse(ui -> {
             ui.getPage().executeJs(
                     "window.Vaadin.Flow.tinymceConnector.initLazy($0, $1, $2, $3)",
-                    rawConfig, getElement(), ta, config)
-                    .then(res -> initialContentSent = true);
+                    rawConfig, getElement(), ta, config).then(res -> {
+                        initialContentSent = true;
+                    });
         });
     }
 
