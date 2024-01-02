@@ -132,9 +132,10 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        id = UUID.randomUUID().toString();
-        ta.setAttribute("id", id);
-        ta.setProperty("innerHTML", currentValue);
+        if(id == null) {
+            id = UUID.randomUUID().toString();
+            ta.setAttribute("id", id);
+        }
         super.onAttach(attachEvent);
         if (attachEvent.isInitialAttach())
             injectTinyMceScript();
@@ -155,8 +156,8 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
 
         runBeforeClientResponse(ui -> {
             ui.getPage().executeJs(
-                    "window.Vaadin.Flow.tinymceConnector.initLazy($0, $1, $2, $3)",
-                    rawConfig, getElement(), ta, config);
+                    "window.Vaadin.Flow.tinymceConnector.initLazy($0, $1, $2, $3, $4)",
+                    rawConfig, getElement(), ta, config, currentValue);
         });
     }
 
@@ -268,8 +269,6 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         if (initialContentSent) {
             runBeforeClientResponse(ui -> getElement()
                     .callJsFunction("$connector.setEditorContent", html));
-        } else {
-            ta.setProperty("innerHTML", html);
         }
     }
 

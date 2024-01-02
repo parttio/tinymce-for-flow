@@ -1,8 +1,8 @@
 window.Vaadin.Flow.tinymceConnector = {
-    initLazy: function (customConfig, c, ta, options) {
+    initLazy: function (customConfig, c, ta, options, initialContent) {
         // Check whether the connector was already initialized
         if (c.$connector) {
-            return;
+            c.$connector.editor.remove();
         }
         c.$connector = {
           
@@ -39,9 +39,7 @@ window.Vaadin.Flow.tinymceConnector = {
         
         baseconfig['setup'] = function(ed) {
           c.$connector.editor = ed;
-          ed.on('setContent', function(e) {
 
-          });
           ed.on('change', function(e) {
                 // console.log("TMCE change");
                 const event = new Event("tchange");
@@ -67,6 +65,8 @@ window.Vaadin.Flow.tinymceConnector = {
           });
 
         };
+
+        ta.innerHTML = initialContent;
 
         tinymce.init(baseconfig);
 
