@@ -11,6 +11,7 @@ public class UpdateValueOnDetachedEditor extends VerticalLayout {
     public UpdateValueOnDetachedEditor() {
 
         TinyMce tinyMce = new TinyMce();
+        tinyMce.setValue("Jorma");
 
         Button b = new Button("Replace value while detached");
         b.addClickListener(e -> {

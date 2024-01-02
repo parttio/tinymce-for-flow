@@ -117,14 +117,17 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         this(false);
     }
 
+    /**
+     * Old public method from era when this component didn't
+     * properly implement the HasValue interfaces.
+     * Don't use this but the standard setValue method instead.
+     *
+     * @param html
+     * @deprecated use {@link #setValue(Object)} instead
+     */
+    @Deprecated(forRemoval = true)
     public void setEditorContent(String html) {
-        this.currentValue = html;
-        if (initialContentSent) {
-            runBeforeClientResponse(ui -> getElement()
-                    .callJsFunction("$connector.setEditorContent", html));
-        } else {
-            ta.setProperty("innerHTML", html);
-        }
+        setPresentationValue(html);
     }
 
     @Override
@@ -260,12 +263,18 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
     }
 
     @Override
-    protected void setPresentationValue(String t) {
-        setEditorContent(t);
+    protected void setPresentationValue(String html) {
+        this.currentValue = html;
+        if (initialContentSent) {
+            runBeforeClientResponse(ui -> getElement()
+                    .callJsFunction("$connector.setEditorContent", html));
+        } else {
+            ta.setProperty("innerHTML", html);
+        }
     }
 
     private TinyMce createBasicTinyMce() {
-        this.setEditorContent("");
+        setValue("");
         this.configure("branding", false);
         this.basicTinyMCECreated = true;
         this.configurePlugin(false, Plugin.ADVLIST, Plugin.AUTOLINK,

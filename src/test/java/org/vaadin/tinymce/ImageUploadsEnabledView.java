@@ -35,7 +35,7 @@ public class ImageUploadsEnabledView extends Div {
         tinyMce = new TinyMce();
         tinyMce.configure("plugins", "code", "link", "image");
         tinyMce.configure("toolbar", "toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | outdent indent' | link image");
-        tinyMce.setEditorContent("<p>Voi <strong>jorma</strong>!<p>");
+        tinyMce.setValue("<p>Voi <strong>jorma</strong>!<p>");
         tinyMce.setHeight("700px");
         add(tinyMce);
     }

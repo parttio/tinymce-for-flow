@@ -24,13 +24,13 @@ public class DemoView extends Div {
     public DemoView() {
         tinyMce = new TinyMce();
 
-        tinyMce.setEditorContent("<p>Voi <strong>jorma</strong>!<p>");
+        tinyMce.setValue("<p>Voi <strong>jorma</strong>!<p>");
         tinyMce.setHeight("700px");
         
         add(tinyMce);
 
         Button b = new Button("Set content dynamically", e -> {
-            tinyMce.setEditorContent("New value");
+            tinyMce.setValue("New value");
         });
         add(b);
 

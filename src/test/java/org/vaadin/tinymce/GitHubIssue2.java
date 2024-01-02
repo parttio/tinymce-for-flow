@@ -28,7 +28,7 @@ public class GitHubIssue2 extends Composite<VerticalLayout> {
 	public GitHubIssue2() {
 		this.getContent().setSizeFull();
 		TinyMce editor = new TinyMce();
-		editor.setEditorContent("sample text");
+		editor.setValue("sample text");
 		tab1Layout.add(new Span("Tiny MCE Editor"), editor);
 		tab2Layout.add(new Span("tab 2"));
 
