@@ -86,8 +86,10 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
     public void setEditorContent(String html) {
         this.currentValue = html;
         if (initialContentSent) {
-            runBeforeClientResponse(ui -> getElement()
-                    .callJsFunction("$connector.setEditorContent", html));
+            runBeforeClientResponse(ui -> {
+                getElement().callJsFunction("$connector.setEditorContent",
+                        html);
+            });
         } else {
             ta.setProperty("innerHTML", html);
         }
@@ -97,6 +99,11 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
     protected void onAttach(AttachEvent attachEvent) {
         id = UUID.randomUUID().toString();
         ta.setAttribute("id", id);
+        if (!attachEvent.isInitialAttach()) {
+            // Value after initial attach should be set via TinyMCE JavaScript
+            // API, otherwise value is not updated upon reattach
+            initialContentSent = true;
+        }
         ta.setProperty("innerHTML", currentValue);
         super.onAttach(attachEvent);
         initConnector();
@@ -117,6 +124,8 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
             ui.getPage().executeJs(
                     "window.Vaadin.Flow.tinymceConnector.initLazy($0, $1, $2, $3)",
                     rawConfig, getElement(), ta, config).then(res -> {
+                        // Delay setting flag on first attach, otherwise setting
+                        // initial value on attach does not work
                         initialContentSent = true;
                     });
         });

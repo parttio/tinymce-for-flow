@@ -1,31 +1,38 @@
 window.Vaadin.Flow.tinymceConnector = {
     initLazy: function (customConfig, c, ta, options) {
-        // Check whether the connector was already initialized for the datepicker
+        // Check whether the connector was already initialized for the editor
+        var currentValue = ta.innerHTML;
+
         if (c.$connector) {
-            return;
-        }
+			// If connector was already set, this is re-attach, remove editor
+			// and re-init
+			tinymce.remove();
+        } else {
+          // Init connector at first visit
+          c.$connector = {
+          
+            setEditorContent : function(html) {
+			  // Delay setting the content, otherwise there is issue during reattach
+              setTimeout(() => {
+                currentValue = this.editor.setContent(html, {format : 'html'});
+              }, 50);
+            },
         
-        c.$connector = {
+            replaceSelectionContent : function(html) {
+              this.editor.selection.setContent(html);
+            },
           
-          setEditorContent : function(html) {
-            this.editor.setContent(html);
-          },
-        
-          replaceSelectionContent : function(html) {
-            this.editor.selection.setContent(html);
-          },
+            focus : function() {
+                this.editor.focus();
+            },
           
-          focus : function() {
-              this.editor.focus();
-          },
-          
-          setEnabled : function(enabled) {
-              this.editor.mode.set(enabled ? "design" : "readonly");
-          }
+            setEnabled : function(enabled) {
+                this.editor.mode.set(enabled ? "design" : "readonly");
+            }
                   
-        };
+          };
         
-        var currentValue = "";
+        }
 
         const pushChanges = function() {
           c.$server.updateValue(currentValue)
@@ -42,10 +49,10 @@ window.Vaadin.Flow.tinymceConnector = {
         baseconfig['setup'] = function(ed) {
           c.$connector.editor = ed;
           ed.on('setContent', function(e) {
-                currentValue = ed.getContent();
+            currentValue = ed.getContent();
           });
           ed.on('change', function(e) {
-                currentValue = ed.getContent();
+            currentValue = ed.getContent();
           });
           ed.on('blur', function(e) {
             currentValue = ed.getContent();
@@ -53,6 +60,7 @@ window.Vaadin.Flow.tinymceConnector = {
           });
         };
 
+        // Allways re-init editor
         tinymce.init(baseconfig);
     }
 }
