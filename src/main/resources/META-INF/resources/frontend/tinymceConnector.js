@@ -30,7 +30,7 @@ window.Vaadin.Flow.tinymceConnector = {
             setEnabled : function(enabled) {
 			  // Debounce is needed if mode is attempted to be changed more than once
 			  // during the attach
-              readonlyTimeout.clear();
+              clearTimeout(readonlyTimeout);
               readonlyTimeout = setTimeout(() => {
                 this.editor.mode.set(enabled ? 'design' : 'readonly');
               }, 20);
