@@ -22,7 +22,9 @@ import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JavaScript;
+import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.dom.ShadowRoot;
@@ -46,6 +48,7 @@ import java.util.UUID;
 @Tag("div")
 @JavaScript("./tinymceConnector.js")
 @JavaScript("context://frontend/tinymce_addon/tinymce/tinymce.js")
+@CssImport("./tinymceLumo.css")
 public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         implements HasSize {
 
