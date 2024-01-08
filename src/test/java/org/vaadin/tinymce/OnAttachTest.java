@@ -54,6 +54,7 @@ public class OnAttachTest extends VerticalLayout {
             getContent().addValueChangeListener(e -> {
                 this.value = e.getValue();
             });
+            getContent().setEnabled(false);
         }
 
         public void setValue(String value, boolean immediate) {
@@ -67,11 +68,13 @@ public class OnAttachTest extends VerticalLayout {
         @Override
         protected void onAttach(AttachEvent attachEvent) {
             super.onAttach(attachEvent);
+            getContent().setEnabled(true);
             getContent().setValue(value);
         }
 
         @Override
         protected void onDetach(DetachEvent detachEvent) {
+            getContent().setEnabled(false);
         }
     }
 }

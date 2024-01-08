@@ -2,6 +2,7 @@ window.Vaadin.Flow.tinymceConnector = {
     initLazy: function (customConfig, c, ta, options) {
         // Check whether the connector was already initialized for the editor
         var currentValue = ta.innerHTML;
+        var readonlyTimeout;
 
         if (c.$connector) {
 			// If connector was already set, this is re-attach, remove editor
@@ -27,9 +28,14 @@ window.Vaadin.Flow.tinymceConnector = {
             },
           
             setEnabled : function(enabled) {
-                this.editor.mode.set(enabled ? "design" : "readonly");
+			  // Debounce is needed if mode is attempted to be changed more than once
+			  // during the attach
+              readonlyTimeout.clear();
+              readonlyTimeout = setTimeout(() => {
+                this.editor.mode.set(enabled ? 'design' : 'readonly');
+              }, 20);
             }
-                  
+
           };
         
         }

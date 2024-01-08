@@ -193,8 +193,9 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
-        runBeforeClientResponse(ui -> getElement()
-                .callJsFunction("$connector.setEnabled", enabled));
+        runBeforeClientResponse(ui -> {
+            getElement().callJsFunction("$connector.setEnabled", enabled);
+        });
     }
 
     @Override
