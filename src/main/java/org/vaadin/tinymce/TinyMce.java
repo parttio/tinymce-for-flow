@@ -141,8 +141,10 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
 
     @ClientCallable
     private void updateValue(String htmlString) {
-        this.currentValue = htmlString;
-        setModelValue(htmlString, true);
+        if (this.isEnabled() && !this.isReadOnly()) {
+            this.currentValue = htmlString;
+            setModelValue(htmlString, true);
+        }
     }
 
     public String getCurrentValue() {
