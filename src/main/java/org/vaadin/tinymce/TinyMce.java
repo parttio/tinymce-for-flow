@@ -80,6 +80,7 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         } else {
             getElement().appendChild(ta);
         }
+        getElement().getClassList().add("tinymce-flow");
     }
 
     public TinyMce() {
@@ -141,10 +142,8 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
 
     @ClientCallable
     private void updateValue(String htmlString) {
-        if (this.isEnabled() && !this.isReadOnly()) {
-            this.currentValue = htmlString;
-            setModelValue(htmlString, true);
-        }
+        this.currentValue = htmlString;
+        setModelValue(htmlString, true);
     }
 
     public String getCurrentValue() {
@@ -207,6 +206,11 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
     public void setReadOnly(boolean readOnly) {
         super.setReadOnly(readOnly);
         setEnabled(!readOnly);
+        if (readOnly) {
+            getElement().setAttribute("readonly", "");
+        } else {
+            getElement().removeAttribute("readonly");
+        }
     }
 
     @Override

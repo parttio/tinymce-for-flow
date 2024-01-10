@@ -129,3 +129,11 @@ div.tox-collection__item > div.tox-collection__item-icon {
 .tox .tox-fancymenuitem .tox-insert-table-picker .tox-insert-table-picker {
   border-color: var(--lumo-contrast-20pct);
 }
+
+.tinymce-flow[readonly] .tox-editor-header {
+  display: none;
+}
+
+.tinymce-flow[disabled]:not([readonly]) {
+  opacity: 0.5;
+}

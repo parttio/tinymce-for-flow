@@ -45,14 +45,15 @@ public class OnAttachTest extends VerticalLayout {
 
     public static class EditorView extends Composite<TinyMce> {
         private String value;
-        private TinyMce tinyMce;
         
         public EditorView(String value) {
             this.value = value;
+            getContent().setWidth("600px");
             getContent().configurePlugin(true, Plugin.TABLE).configureToolbar(true,
                     Toolbar.TABLE);
             getContent().addValueChangeListener(e -> {
                 this.value = e.getValue();
+                Notification.show(this.value);
             });
             getContent().setEnabled(false);
         }
