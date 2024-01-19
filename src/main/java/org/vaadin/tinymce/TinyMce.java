@@ -17,7 +17,6 @@ package org.vaadin.tinymce;
 
 import com.vaadin.flow.component.AbstractCompositeField;
 import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.Focusable;
@@ -26,10 +25,6 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.value.ValueChangeMode;
-import com.vaadin.flow.dom.DebouncePhase;
-import com.vaadin.flow.dom.DomEvent;
 import com.vaadin.flow.dom.DomEventListener;
 import com.vaadin.flow.dom.DomListenerRegistration;
 import com.vaadin.flow.dom.Element;
@@ -161,8 +156,8 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
 
         runBeforeClientResponse(ui -> {
             ui.getPage().executeJs(
-                    "window.Vaadin.Flow.tinymceConnector.initLazy($0, $1, $2, $3, $4)",
-                    rawConfig, getElement(), ta, config, currentValue);
+                    "window.Vaadin.Flow.tinymceConnector.initLazy($0, $1, $2, $3, $4, $5)",
+                    rawConfig, getElement(), ta, config, currentValue, (enabled && !readOnly));
         });
     }
 

@@ -1,5 +1,5 @@
 window.Vaadin.Flow.tinymceConnector = {
-    initLazy: function (customConfig, c, ta, options, initialContent) {
+    initLazy: function (customConfig, c, ta, options, initialContent, enabled) {
         // Check whether the connector was already initialized
         if (c.$connector) {
             c.$connector.editor.remove();
@@ -36,6 +36,10 @@ window.Vaadin.Flow.tinymceConnector = {
         baseconfig['height'] = "100%";
 
         baseconfig['target'] = ta;
+
+        if(!enabled) {
+            baseconfig['readonly'] = true;
+        }
         
         baseconfig['setup'] = function(ed) {
           c.$connector.editor = ed;
