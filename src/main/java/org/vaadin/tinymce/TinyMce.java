@@ -67,6 +67,8 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
 
     private int debounceTimeout = 5000;
     private boolean basicTinyMCECreated;
+    private boolean enabled = true;
+    private boolean readOnly = false;
 
     /**
      * Creates a new TinyMce editor with shadowroot set or disabled. The shadow
@@ -144,6 +146,9 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
 
     @Override
     protected void onDetach(DetachEvent detachEvent) {
+        detachEvent.getUI().getPage().executeJs("""
+                tinymce.get($0).remove();
+                """, id);
         super.onDetach(detachEvent);
         initialContentSent = false;
         // save the current value to the dom element in case the component gets
@@ -252,15 +257,22 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
 
     @Override
     public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
+        this.enabled = enabled;
+        adjustEnabledState();
+    }
+
+    private void adjustEnabledState() {
+        boolean reallyEnabled = this.enabled && !this.readOnly;
+        super.setEnabled(reallyEnabled);
         runBeforeClientResponse(ui -> getElement()
-                .callJsFunction("$connector.setEnabled", enabled));
+                .callJsFunction("$connector.setEnabled", reallyEnabled));
     }
 
     @Override
     public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
         super.setReadOnly(readOnly);
-        setEnabled(!readOnly);
+        adjustEnabledState();
     }
 
     @Override
