@@ -26,7 +26,6 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.dom.DebouncePhase;
 import com.vaadin.flow.dom.DomEventListener;
 import com.vaadin.flow.dom.DomListenerRegistration;
 import com.vaadin.flow.dom.Element;
@@ -238,7 +237,21 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
     @Override
     public void focus() {
         runBeforeClientResponse(
-                ui -> getElement().callJsFunction("$connector.focus"));
+                ui -> {
+                    // Dialog has timing issues...
+                    getElement().executeJs("""
+                        const el = this;
+                        const isInShadowRoot = document.body.contains(el);
+                        if(isInShadowRoot) {
+                            setTimeout(() => {
+                                debugger;
+                                el.$connector.focus()
+                            }, 150);
+                        } else {
+                            el.$connetor.focus();
+                        }
+                        """);
+                ;});
     }
 
     @Override

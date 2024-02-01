@@ -16,15 +16,17 @@ public class PreserveOnRefreshBug27 extends VerticalLayout {
     public PreserveOnRefreshBug27() {
         Dialog dialog = new Dialog();
         TinyMce tinyMce = new TinyMce();
+        tinyMce.setTabIndex(1);
         tinyMce.configure("branding", false);
         tinyMce.configure("statusbar", false);
         tinyMce.setValue("<h2>Hallo Leute,</h2>");
         dialog.add(tinyMce);
-        dialog.add(new Button("Cancel", e -> dialog.close()));
+        dialog.add(new VButton("Cancel", e -> dialog.close()).withTabIndex(3));
         VButton button = new VButton("Focus (CTRL-I)", e -> tinyMce.focus());
+        button.setTabIndex(2);
         button.addClickShortcut(Key.of("i"), KeyModifier.CONTROL);
         dialog.add(button);
-        Button open = new Button("Open", e -> dialog.open());
+        Button open = new Button("Open", e -> {dialog.open(); tinyMce.focus();});
         Button enable = new Button("Disable");
         enable.addClickListener(e -> {
             if ("Disable".equals(enable.getText())) {
