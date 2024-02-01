@@ -23,6 +23,7 @@ import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.dom.DomEventListener;
@@ -49,6 +50,7 @@ import java.util.UUID;
  */
 @Tag("div")
 @JavaScript("./tinymceConnector.js")
+@CssImport("./tinymceLumo.css")
 public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         implements HasSize, Focusable<TinyMce> {
 
@@ -115,9 +117,9 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
     }
 
     /**
-     * Old public method from era when this component didn't
-     * properly implement the HasValue interfaces.
-     * Don't use this but the standard setValue method instead.
+     * Old public method from era when this component didn't properly implement
+     * the HasValue interfaces. Don't use this but the standard setValue method
+     * instead.
      *
      * @param html
      * @deprecated use {@link #setValue(Object)} instead
@@ -129,9 +131,14 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        if(id == null) {
+        if (id == null) {
             id = UUID.randomUUID().toString();
             ta.setAttribute("id", id);
+        }
+        if (!attachEvent.isInitialAttach()) {
+            // Value after initial attach should be set via TinyMCE JavaScript
+            // API, otherwise value is not updated upon reattach
+            initialContentSent = true;
         }
         super.onAttach(attachEvent);
         if (attachEvent.isInitialAttach())
@@ -152,12 +159,13 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
 
     @SuppressWarnings("deprecation")
     private void initConnector() {
-        this.initialContentSent = true;
 
         runBeforeClientResponse(ui -> {
             ui.getPage().executeJs(
                     "window.Vaadin.Flow.tinymceConnector.initLazy($0, $1, $2, $3, $4, $5)",
-                    rawConfig, getElement(), ta, config, currentValue, (enabled && !readOnly));
+                    rawConfig, getElement(), ta, config, currentValue,
+                    (enabled && !readOnly))
+                    .then(res -> initialContentSent = true);
         });
     }
 

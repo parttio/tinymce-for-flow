@@ -1,28 +1,43 @@
 window.Vaadin.Flow.tinymceConnector = {
     initLazy: function (customConfig, c, ta, options, initialContent, enabled) {
+		var currentValue = ta.innerHTML;
+        var readonlyTimeout;
+ 
         // Check whether the connector was already initialized
         if (c.$connector) {
+            // If connector was already set, this is re-attach, remove editor
+            // and re-init
             c.$connector.editor.remove();
-        }
-        c.$connector = {
+        } else {
+          // Init connector at first visit
+          c.$connector = {
           
-          setEditorContent : function(html) {
-            this.editor.setContent(html);
-          },
+            setEditorContent : function(html) {
+              // Delay setting the content, otherwise there is issue during reattach
+              setTimeout(() => {
+                currentValue = this.editor.setContent(html, {format : 'html'});
+              }, 50);
+            },
         
-          replaceSelectionContent : function(html) {
-            this.editor.selection.setContent(html);
-          },
+            replaceSelectionContent : function(html) {
+              this.editor.selection.setContent(html);
+            },
           
-          focus : function() {
+            focus : function() {
               this.editor.focus();
-          },
+            },
 
-          setEnabled : function(enabled) {
-              this.editor.mode.set(enabled ? "design" : "readonly");
-          }
+            setEnabled : function(enabled) {
+              // Debounce is needed if mode is attempted to be changed more than once
+              // during the attach
+              clearTimeout(readonlyTimeout);
+              readonlyTimeout = setTimeout(() => {
+                this.editor.mode.set(enabled ? 'design' : 'readonly');
+              }, 20);
+            }
                   
-        };
+          };
+        }
         
         var baseconfig = JSON.parse(customConfig) || {} ;
         

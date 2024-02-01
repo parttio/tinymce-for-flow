@@ -13,6 +13,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <vaadin.version>24.3.1</vaadin.version>
     </properties>
     <organization>
         <name>Team Parttio</name>
@@ -56,7 +57,7 @@
                 <artifactId>vaadin-bom</artifactId>
                 <type>pom</type>
                 <scope>import</scope>
-                <version>24.3.1</version>
+                <version>${vaadin.version}</version>
             </dependency>
             <!-- The add-on itself does not depend on Spring Boot.
                  This is to simplify testing setup only, to get compatible deps
@@ -124,6 +125,22 @@
 
     <build>
         <plugins>
+			<plugin>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-maven-plugin</artifactId>
+				<version>${vaadin.version}</version>
+				<configuration>
+					<requireHomeNodeExec>true</requireHomeNodeExec>
+					<pnpmEnable>true</pnpmEnable>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-frontend</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>			
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
