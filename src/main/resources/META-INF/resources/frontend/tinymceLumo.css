@@ -1,0 +1,150 @@
+.tox .tox-editor-header > .tox-menubar {
+  background-color: var(--lumo-contrast-5pct);
+  padding-left: var(--lumo-space-s);
+  padding-right: var(--lumo-space-s);
+}
+
+.tox .tox-editor-container .tox-editor-header .tox-toolbar-overlord > .tox-toolbar__primary {
+  background-color: var(--lumo-contrast-5pct);
+  padding-left: var(--lumo-space-s);
+  padding-right: var(--lumo-space-s);
+  border-top: unset;
+}
+
+.tox .tox-editor-container .tox-editor-header:not(.tox-tinymce-inline) {
+  box-shadow: var(--lumo-box-shadow-xs);
+  padding: 0px;
+}
+
+.tox .tox-editor-container .tox-editor-header .tox-toolbar-overlord {
+    border-top: unset;
+    margin: 0px;
+    padding: 0px;
+}
+
+.tox:not([dir=rtl]) .tox-toolbar-overlord .tox-toolbar__group:not(:last-of-type) {
+    border-right: 1px solid var(--lumo-contrast-20pct);
+}
+
+.tox button.tox-tbtn--enabled {
+  background: var(--lumo-primary-color);
+}
+
+.tox button.tox-tbtn--enabled:hover {
+  background: var(--lumo-primary-color);
+}
+
+.tox button.tox-tbtn:hover {
+  background: var(--lumo-contrast-10pct);
+}
+
+.tox .tox-tbtn--disabled[aria-disabled="true"] .tox-icon > svg {
+  fill: var(--lumo-contrast-20pct);
+}
+
+.tox .tox-tbtn .tox-icon > svg {
+  fill: var(--lumo-contrast-60pct);
+}
+
+.tox .tox-tbtn--enabled .tox-icon > svg {
+  fill: var(--lumo-primary-contrast-color);
+}
+
+.tox .tox-tbtn--enabled:hover .tox-icon > svg {
+  fill: var(--lumo-primary-contrast-color);
+}
+
+.tox.tox-tinymce {
+  border: 1px solid var(--lumo-contrast-20pct);
+  border-radius: var(--lumo-border-radius-m);
+}
+
+.tox .tox-statusbar__text-container .tox-statusbar__path-item {
+  color: var(--lumo-secondary-text-color);
+}
+
+.tox .tox-statusbar__text-container .tox-statusbar__path-divider {
+  color: var(--lumo-secondary-text-color);
+}
+
+.tox .tox-statusbar__text-container {
+  font-size: var(--lumo-font-size-s);
+}
+
+button.tox-mbtn.tox-mbtn--select.tox-mbtn--active {
+  background: var(--lumo-primary-color-50pct);
+  color: var(--lumo-primary-contrast-color);  
+}
+
+.tox-menubar > button.tox-mbtn.tox-mbtn--select:hover:not(:disabled) {
+  background: var(--lumo-primary-color-10pct);
+}
+
+button.tox-mbtn.tox-mbtn--select {
+  color: var(--lumo-body-text-color);
+  font-size: var(--lumo-font-size-m);
+}
+
+button.tox-tbtn.tox-tbtn--select.tox-tbtn--bespoke {
+  color: var(--lumo-body-text-color);
+}
+
+.tox-menu.tox-collection.tox-collection--list.tox-selected-menu {
+  border-radius: var(--lumo-border-radius-m);
+}
+
+.tox-menu.tox-collection.tox-collection--list {
+  background: var(--lumo-base-color);
+  box-shadow: var(--lumo-box-shadow-s);
+  box-shadow: var(--lumo-box-shadow-m);
+}
+
+.tox .tox-menu.tox-collection--list .tox-collection__item.tox-collection__item--active {
+  color: var(--lumo-body-text-color);
+  background-color: var(--lumo-primary-color-10pct);
+}
+
+.tox-menu-nav__js.tox-collection__item.tox-collection__item {
+  color: var(--lumo-body-text-color);
+}
+
+.tox .tox-collection > .tox-collection__group {
+  border-color: var(--lumo-contrast-20pct) !important;
+  padding-top: var(--lumo-space-s) !important;
+  padding-bottom: var(--lumo-space-s) !important;
+}
+
+div.tox-collection__item > div.tox-collection__item-accessory {
+  color: var(--lumo-secondary-text-color);
+}
+
+div.tox-collection__item > div.tox-collection__item-label {
+  font-size: var(--lumo-font-size-m);
+  line-height: var(--lumo-line-height-m);
+}
+
+div.tox-collection__item > div.tox-collection__item-icon {
+  width: var(--lumo-size-s);
+  height: var(--lumo-size-s);
+}
+
+.tox .tox-collection__item > .tox-collection__item-caret svg {
+  fill: var(--lumo-contrast-50pct);
+}
+
+.tox .tox-fancymenuitem .tox-insert-table-picker .tox-insert-table-picker__selected {
+  background-color: var(--lumo-primary-color-10pct);
+  border-color: var(--lumo-primary-color-50pct);
+}
+
+.tox .tox-fancymenuitem .tox-insert-table-picker .tox-insert-table-picker {
+  border-color: var(--lumo-contrast-20pct);
+}
+
+.tinymce-flow[readonly] .tox-editor-header {
+  display: none;
+}
+
+.tinymce-flow[disabled]:not([readonly]) {
+  opacity: 0.5;
+}
