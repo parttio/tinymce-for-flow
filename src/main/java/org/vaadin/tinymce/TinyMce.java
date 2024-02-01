@@ -26,6 +26,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.dom.DebouncePhase;
 import com.vaadin.flow.dom.DomEventListener;
 import com.vaadin.flow.dom.DomListenerRegistration;
 import com.vaadin.flow.dom.Element;
@@ -87,6 +88,7 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         } else {
             getElement().appendChild(ta);
         }
+
         domListenerRegistration = getElement().addEventListener("tchange",
                 (DomEventListener) event -> {
                     boolean value = event.getEventData()
@@ -134,6 +136,11 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         if (id == null) {
             id = UUID.randomUUID().toString();
             ta.setAttribute("id", id);
+        }
+        if(!getEventBus().hasListener(BlurEvent.class)) {
+            // adding fake blur listener so throttled value
+            // change events happen by latest at blur
+            addBlurListener(e -> {});
         }
         if (!attachEvent.isInitialAttach()) {
             // Value after initial attach should be set via TinyMCE JavaScript
