@@ -23,8 +23,8 @@ import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JavaScript;
+import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.dom.DomEventListener;
 import com.vaadin.flow.dom.DomListenerRegistration;
@@ -49,8 +49,8 @@ import java.util.UUID;
  * @author mstahv
  */
 @Tag("div")
-@JavaScript("./tinymceConnector.js")
-@CssImport("./tinymceLumo.css")
+@JavaScript("context://frontend/tinymceConnector.js")
+@StyleSheet("context://frontend/tinymceLumo.css")
 public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         implements HasSize, Focusable<TinyMce> {
 
