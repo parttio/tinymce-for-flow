@@ -1,10 +1,13 @@
 package org.vaadin.tinymce;
 
+import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.KeyModifier;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.router.Route;
+import org.vaadin.firitin.components.button.VButton;
 
 @Route
 @PreserveOnRefresh
@@ -18,6 +21,9 @@ public class PreserveOnRefreshBug27 extends VerticalLayout {
         tinyMce.setValue("<h2>Hallo Leute,</h2>");
         dialog.add(tinyMce);
         dialog.add(new Button("Cancel", e -> dialog.close()));
+        VButton button = new VButton("Focus (CTRL-I)", e -> tinyMce.focus());
+        button.addClickShortcut(Key.of("i"), KeyModifier.CONTROL);
+        dialog.add(button);
         Button open = new Button("Open", e -> dialog.open());
         Button enable = new Button("Disable");
         enable.addClickListener(e -> {
