@@ -34,8 +34,19 @@ window.Vaadin.Flow.tinymceConnector = {
               readonlyTimeout = setTimeout(() => {
                 this.editor.mode.set(enabled ? 'design' : 'readonly');
               }, 20);
+            },
+            isInDialog: function() {
+                let inDialog = false;
+                let parent = c.parentElement;
+                while(parent != null) {
+                    if(parent.tagName.toLowerCase().indexOf("vaadin-dialog") == 0) {
+                        inDialog = true;
+                        break;
+                    }
+                    parent = parent.parentElement;
+                }
+                return inDialog;
             }
-                  
           };
         }
         
@@ -83,6 +94,18 @@ window.Vaadin.Flow.tinymceConnector = {
             c.dispatchEvent(event);
           });
 
+          if(c.$connector.isInDialog()) {
+              // This is inside a shadowroot (Dialog in Vaadin)
+              // and needs some hacks to make this nagigateable with keyboard
+              if(!c.tabIndex) {
+                  // make the wrapping element also focusable
+                  c.setAttribute("tabindex", 0);
+              }
+              // on focus to wrapping element, pass forward to editor
+              c.addEventListener("focus", e=> {
+                ed.focus();
+              });
+          }
         };
 
         ta.innerHTML = initialContent;

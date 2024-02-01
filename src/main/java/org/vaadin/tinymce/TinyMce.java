@@ -241,10 +241,8 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
                     // Dialog has timing issues...
                     getElement().executeJs("""
                         const el = this;
-                        const isInShadowRoot = document.body.contains(el);
-                        if(isInShadowRoot) {
+                        if(el.$connector.isInDialog()) {
                             setTimeout(() => {
-                                debugger;
                                 el.$connector.focus()
                             }, 150);
                         } else {

@@ -16,7 +16,6 @@ public class PreserveOnRefreshBug27 extends VerticalLayout {
     public PreserveOnRefreshBug27() {
         Dialog dialog = new Dialog();
         TinyMce tinyMce = new TinyMce();
-        tinyMce.setTabIndex(1);
         tinyMce.configure("branding", false);
         tinyMce.configure("statusbar", false);
         tinyMce.setValue("<h2>Hallo Leute,</h2>");
