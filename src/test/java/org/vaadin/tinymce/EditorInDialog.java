@@ -11,7 +11,7 @@ public class EditorInDialog extends Div {
 
     public EditorInDialog() {
         Dialog dialog = new Dialog();
-        dialog.setModal(false);
+//        dialog.setModal(false);
 
         TinyMce editor = new TinyMce();
         editor.configure("plugins", "link");
