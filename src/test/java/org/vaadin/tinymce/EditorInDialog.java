@@ -1,36 +1,35 @@
 package org.vaadin.tinymce;
 
-import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
-import org.vaadin.tinymce.TinyMce;
 
 @Route
 public class EditorInDialog extends Div {
-    
+
     public EditorInDialog() {
         Dialog dialog = new Dialog();
         dialog.setModal(false);
-        
-        TinyMce editor = new TinyMce(true);
+
+        TinyMce editor = new TinyMce();
         editor.configure("plugins", "link");
 
         editor.addValueChangeListener(e -> {
             reportValue(e.getValue());
         });
-        
-        dialog.add(new Div(editor, new Button("show value", e ->{reportValue(editor.getValue());})));
+
+        dialog.add(new Div(editor, new Button("show value", e -> {
+            reportValue(editor.getValue());
+        }), new Button("close", e -> {
+            dialog.close();
+        })));
         Button button = new Button("Open the editor dialog");
         button.addClickListener(event -> {
             dialog.open();
         });
-        
+
         add(button);
 
     }
