@@ -20,6 +20,7 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.Focusable;
+import com.vaadin.flow.component.HasLabel;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
@@ -52,7 +53,7 @@ import java.util.UUID;
 @JavaScript("context://frontend/tinymceConnector.js")
 @StyleSheet("context://frontend/tinymceLumo.css")
 public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
-        implements HasSize, Focusable<TinyMce> {
+        implements HasSize, Focusable<TinyMce>, HasLabel {
 
     private final DomListenerRegistration domListenerRegistration;
     private String id;
