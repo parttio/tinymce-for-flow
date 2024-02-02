@@ -34,8 +34,20 @@ window.Vaadin.Flow.tinymceConnector = {
               readonlyTimeout = setTimeout(() => {
                 this.editor.mode.set(enabled ? 'design' : 'readonly');
               }, 20);
+            },
+
+            isInDialog: function() {
+                let inDialog = false;
+                let parent = c.parentElement;
+                while(parent != null) {
+                    if(parent.tagName.toLowerCase().indexOf("vaadin-dialog") == 0) {
+                        inDialog = true;
+                        break;
+                    }
+                    parent = parent.parentElement;
+                }
+                return inDialog;
             }
-                  
           };
         }
         
@@ -87,6 +99,8 @@ window.Vaadin.Flow.tinymceConnector = {
 
         ta.innerHTML = initialContent;
 
+        tinymce.init(baseconfig);
+
         // Move aux element as child to fix Dialog issues, TinyMCE is slow
         // to init, thus timeout needed        
         setTimeout(() => {
@@ -96,8 +110,6 @@ window.Vaadin.Flow.tinymceConnector = {
           aux.style.position = 'absolute';
           c.appendChild(aux);
         }, 500);
-
-        tinymce.init(baseconfig);
 
     }
 }
