@@ -7,7 +7,7 @@ import com.vaadin.flow.router.Route;
 public class TinyMceWithAdditionalConfig extends VerticalLayout {
 
     public TinyMceWithAdditionalConfig() {
-        TinyMce tinyMce = new TinyMce(true);
+        TinyMce tinyMce = new TinyMce();
         tinyMce.configurePlugin(true, Plugin.TABLE)
                 .configureMenubar(true, Menubar.TABLE)
                 .configureToolbar(true, Toolbar.TABLE);

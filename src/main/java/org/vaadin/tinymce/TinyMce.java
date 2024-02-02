@@ -74,9 +74,12 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
      * hand, the shadow root must not be on when for example used in inline
      * mode.
      *
+     * @deprecated No longer needed since version x.x
+     * 
      * @param shadowRoot
      *            true of shadow root hack should be used
      */
+    @Deprecated
     public TinyMce(boolean shadowRoot) {
         super("");
         setHeight("500px");
