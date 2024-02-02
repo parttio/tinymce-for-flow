@@ -67,49 +67,61 @@ window.Vaadin.Flow.tinymceConnector = {
         if(!enabled) {
             baseconfig['readonly'] = true;
         }
+
         
         baseconfig['setup'] = function(ed) {
-          c.$connector.editor = ed;
+            c.$connector.editor = ed;
 
-          ed.on('change', function(e) {
+            ed.on('init', e => {
+                if(c.$connector.isInDialog()) {
+                    // This is inside a shadowroot (Dialog in Vaadin)
+                    // and needs some hacks to make this nagigateable with keyboard
+                    if(c.tabIndex < 0) {
+                        // make the wrapping element also focusable
+                        c.setAttribute("tabindex", 0);
+                    }
+                    // on focus to wrapping element, pass forward to editor
+                    c.addEventListener("focus", e=> {
+                      ed.focus();
+                    });
+                    // Move aux element as child from body to element to fix menus in modal Dialog
+                    const aux = document.getElementsByClassName('tox-tinymce-aux')[0];
+                    aux.parentElement.removeChild(aux);
+                    // Fix to allow menu grow outside Dialog
+                    aux.style.position = 'absolute';
+                    c.appendChild(aux);
+                }
+            });
+
+            ed.on('change', function(e) {
                 // console.log("TMCE change");
                 const event = new Event("tchange");
                 event.htmlString = ed.getContent();
                 c.dispatchEvent(event);
-           });
-          ed.on('blur', function(e) {
+            });
+            ed.on('blur', function(e) {
             //console.log("TMCE blur");
             const event = new Event("tblur");
             c.dispatchEvent(event);
-          });
-          ed.on('focus', function(e) {
+            });
+            ed.on('focus', function(e) {
             //console.log("TMCE focus");
             const event = new Event("tfocus");
             c.dispatchEvent(event);
-          });
+            });
 
-          ed.on('input', function(e) {
+            ed.on('input', function(e) {
             //console.log("TMCE input");
             const event = new Event("tchange");
             event.htmlString = ed.getContent();
             c.dispatchEvent(event);
-          });
+            });
 
         };
 
         ta.innerHTML = initialContent;
 
         tinymce.init(baseconfig);
-
-        // Move aux element as child to fix Dialog issues, TinyMCE is slow
-        // to init, thus timeout needed        
-        setTimeout(() => {
-          const aux = document.getElementsByClassName('tox-tinymce-aux')[0];
-          aux.parentElement.removeChild(aux);
-          // Fix to allow menu grow outside Dialog
-          aux.style.position = 'absolute';
-          c.appendChild(aux);
-        }, 500);
 
     }
 }
