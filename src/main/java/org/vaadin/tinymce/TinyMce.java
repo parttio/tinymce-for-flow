@@ -37,7 +37,9 @@ import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 import elemental.json.JsonValue;
 
+import java.util.Arrays;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * A Rich Text editor, based on TinyMCE Web Component.
@@ -354,21 +356,17 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
             createBasicTinyMce();
         }
 
-        JsonArray jsonArray = config.get("menubar");
-        int initialIndex = 0;
+        String newconfig  = Arrays.stream(menubars).map(m -> m.menubarLabel).collect(Collectors.joining(" "));
 
-        if (jsonArray != null) {
-            initialIndex = jsonArray.length();
+        String menubar;
+        if (config.hasKey("menubar")) {
+            menubar = config.getString("menubar");
+            menubar = menubar + " " + newconfig;
         } else {
-            jsonArray = Json.createArray();
+            menubar = newconfig;
         }
 
-        for (int i = 0; i < menubars.length; i++) {
-            jsonArray.set(initialIndex, menubars[i].menubarLabel);
-            initialIndex++;
-        }
-
-        config.put("menubar", jsonArray);
+        config.put("menubar", menubar);
         return this;
     }
 

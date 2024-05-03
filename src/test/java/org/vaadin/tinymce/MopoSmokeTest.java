@@ -4,8 +4,10 @@ import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.assertions.PlaywrightAssertions;
 import in.virit.mopo.Mopo;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,4 +55,13 @@ public class MopoSmokeTest {
         });
 
     }
+
+    @Test
+    public void menuConfig() throws InterruptedException {
+        String url = "http://localhost:" + port + "/menuconfig";
+        page.navigate(url);
+        PlaywrightAssertions.assertThat(page.locator("button").getByText("File")).isVisible();
+        Assertions.assertEquals(0, page.locator("button").getByText("Insert").count());
+    }
+
 }
