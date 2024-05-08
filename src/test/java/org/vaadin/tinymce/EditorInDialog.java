@@ -13,7 +13,7 @@ public class EditorInDialog extends Div {
     public EditorInDialog() {
         Dialog dialog = new Dialog();
         
-        TinyMce editor = new TinyMce(true);
+        TinyMce editor = new TinyMce();
         editor.configure("plugins", "link");
         
         editor.addValueChangeListener(e -> 

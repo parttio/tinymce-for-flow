@@ -17,7 +17,7 @@ public class DemoView extends Div {
 
         tinyMce.setEditorContent("<p>Voi <strong>jorma</strong>!<p>");
         tinyMce.setHeight("700px");
-        
+        tinyMce.setDebounceTimeout(500);
         add(tinyMce);
 
         Button b = new Button("Set content dynamically", e -> {

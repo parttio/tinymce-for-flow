@@ -110,6 +110,7 @@ div.tox-collection__item > div.tox-collection__item-accessory {
 div.tox-collection__item > div.tox-collection__item-label {
   font-size: var(--lumo-font-size-m);
   line-height: var(--lumo-line-height-m);
+  word-break: normal;
 }
 
 div.tox-collection__item > div.tox-collection__item-icon {
