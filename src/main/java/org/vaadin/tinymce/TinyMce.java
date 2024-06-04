@@ -229,6 +229,11 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         return this;
     }
 
+    public TinyMce configureLanguage(Language language) {
+        config.put("language", language.toString());;
+        return this;
+    }
+
     /**
      * Replaces text in the editors selection (can be just a caret position).
      *

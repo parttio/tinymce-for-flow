@@ -49,6 +49,7 @@ public class OnAttachTest extends VerticalLayout {
         public EditorView(String value) {
             this.value = value;
             getContent().setWidth("600px");
+            getContent().configureLanguage(Language.FINNISH);
             getContent().configurePlugin(true, Plugin.TABLE).configureToolbar(true,
                     Toolbar.TABLE);
             getContent().addValueChangeListener(e -> {
