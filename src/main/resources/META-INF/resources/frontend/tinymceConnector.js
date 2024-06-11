@@ -3,7 +3,7 @@ window.Vaadin.Flow.tinymceConnector = {
         // Check whether the connector was already initialized for the editor
         var readonlyTimeout;
         var currentValue = ta.innerHTML;
-        var eager = false;
+        var changeMode = 'change';
 
         var readonlyTimeout;
         if (c.$connector) {
@@ -38,8 +38,8 @@ window.Vaadin.Flow.tinymceConnector = {
               }, 20);
             },
 
-            setEager : function(changeMode) {
-				eager = changeMode;
+            setMode : function(newChangeMode) {
+				changeMode = newChangeMode;
 			},
 
             isInDialog: function() {
@@ -95,9 +95,11 @@ window.Vaadin.Flow.tinymceConnector = {
           });
 
           ed.on('change', function(e) {
-            const event = new Event("tchange");
-            event.htmlString = ed.getContent();
-            c.dispatchEvent(event);
+			if (changeMode === 'change') {
+              const event = new Event("tchange");
+              event.htmlString = ed.getContent();
+              c.dispatchEvent(event);
+            }
           });
           ed.on('blur', function(e) {
             const blurEvent = new Event("tblur");
@@ -111,7 +113,7 @@ window.Vaadin.Flow.tinymceConnector = {
             c.dispatchEvent(event);
           });
           ed.on('input', function(e) {
-			if (eager) {
+			if (changeMode === 'timeout') {
               const event = new Event("tchange");
               event.htmlString = ed.getContent();
               c.dispatchEvent(event);
