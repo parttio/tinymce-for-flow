@@ -159,9 +159,12 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
 
     @Override
     protected void onDetach(DetachEvent detachEvent) {
-        detachEvent.getUI().getPage().executeJs("""
+        // See https://github.com/parttio/tinymce-for-flow/issues/33
+        if(isVisible()) {
+            detachEvent.getUI().getPage().executeJs("""
                 tinymce.get($0).remove();
                 """, id);
+        }
         super.onDetach(detachEvent);
         initialContentSent = false;
         // save the current value to the dom element in case the component gets
