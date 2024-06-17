@@ -64,7 +64,7 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
     JsonObject config = Json.createObject();
     private Element ta = new Element("div");
 
-    private int debounceTimeout = 5000;
+    private int debounceTimeout = 0;
     private boolean basicTinyMCECreated;
     private boolean enabled = true;
     private boolean readOnly = false;
@@ -106,15 +106,53 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         domListenerRegistration.debounce(debounceTimeout);
     }
 
+
     /**
-     * Sets the debounce timeout for the value change event. The default is
-     * 5000.
-     * 
+     * Define the mode of value change triggering. BLUR: Value is triggered only
+     * when TinyMce loses focus, TIMEOUT: TinyMce will send value change eagerly
+     * but debounced with timeout, CHANGE: value change is sent when TinyMce
+     * emits change event (e.g. enter, tab)
+     *
+     * @see setDebounceTimeout(int)
+     * @param mode
+     *            The mode.
+     */
+    public void setValueChangeMode(ValueChangeMode mode) {
+        if (mode == ValueChangeMode.BLUR) {
+            runBeforeClientResponse(ui -> {
+                getElement().callJsFunction("$connector.setMode", "blur");
+            });
+        } else if (mode == ValueChangeMode.TIMEOUT) {
+            runBeforeClientResponse(ui -> {
+                getElement().callJsFunction("$connector.setMode", "timeout");
+            });
+        } else if (mode == ValueChangeMode.CHANGE) {
+            runBeforeClientResponse(ui -> {
+                getElement().callJsFunction("$connector.setMode", "change");
+            });
+        }
+    }
+
+    /**
+     * Sets the debounce timeout for the value change event. The default is 0,
+     * when value change is triggered on blur and enter key presses. When value
+     * is more than 0 the value change is emitted with delay of given timeout
+     * milliseconds after last keystroke.
+     *
+     * @see setValueChangeMode(ValueChangeMode)
      * @param debounceTimeout
      *            the debounce timeout in milliseconds
      */
     public void setDebounceTimeout(int debounceTimeout) {
-        this.debounceTimeout = debounceTimeout;
+        if (debounceTimeout > 0) {
+            runBeforeClientResponse(ui -> {
+                getElement().callJsFunction("$connector.setEager", "timeout");
+            });
+        } else {
+            runBeforeClientResponse(ui -> {
+                getElement().callJsFunction("$connector.setEager", "change");
+            });
+        }
         domListenerRegistration.debounce(debounceTimeout);
     }
 
@@ -141,10 +179,11 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
             id = UUID.randomUUID().toString();
             ta.setAttribute("id", id);
         }
-        if(!getEventBus().hasListener(BlurEvent.class)) {
+        if (!getEventBus().hasListener(BlurEvent.class)) {
             // adding fake blur listener so throttled value
             // change events happen by latest at blur
-            addBlurListener(e -> {});
+            addBlurListener(e -> {
+            });
         }
         if (!attachEvent.isInitialAttach()) {
             // Value after initial attach should be set via TinyMCE JavaScript
@@ -160,10 +199,10 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
     @Override
     protected void onDetach(DetachEvent detachEvent) {
         // See https://github.com/parttio/tinymce-for-flow/issues/33
-        if(isVisible()) {
+        if (isVisible()) {
             detachEvent.getUI().getPage().executeJs("""
-                tinymce.get($0).remove();
-                """, id);
+                    tinymce.get($0).remove();
+                    """, id);
         }
         super.onDetach(detachEvent);
         initialContentSent = false;
@@ -220,6 +259,11 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         return this;
     }
 
+    public TinyMce configureLanguage(Language language) {
+        config.put("language", language.toString());
+        return this;
+    }
+
     /**
      * Replaces text in the editors selection (can be just a caret position).
      *
@@ -244,20 +288,20 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
 
     @Override
     public void focus() {
-        runBeforeClientResponse(
-                ui -> {
-                    // Dialog has timing issues...
-                    getElement().executeJs("""
-                        const el = this;
-                        if(el.$connector.isInDialog()) {
-                            setTimeout(() => {
-                                el.$connector.focus()
-                            }, 150);
-                        } else {
-                            el.$connetor.focus();
-                        }
-                        """);
-                ;});
+        runBeforeClientResponse(ui -> {
+            // Dialog has timing issues...
+            getElement().executeJs("""
+                    const el = this;
+                    if(el.$connector.isInDialog()) {
+                        setTimeout(() => {
+                            el.$connector.focus()
+                        }, 150);
+                    } else {
+                        el.$connetor.focus();
+                    }
+                    """);
+            ;
+        });
     }
 
     @Override
@@ -359,7 +403,8 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
             createBasicTinyMce();
         }
 
-        String newconfig  = Arrays.stream(menubars).map(m -> m.menubarLabel).collect(Collectors.joining(" "));
+        String newconfig = Arrays.stream(menubars).map(m -> m.menubarLabel)
+                .collect(Collectors.joining(" "));
 
         String menubar;
         if (config.hasKey("menubar")) {

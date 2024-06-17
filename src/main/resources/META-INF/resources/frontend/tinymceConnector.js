@@ -2,6 +2,7 @@ window.Vaadin.Flow.tinymceConnector = {
     initLazy: function (customConfig, c, ta, options, initialContent, enabled) {
 		var currentValue = ta.innerHTML;
         var readonlyTimeout;
+        var changeMode = 'change';
  
         // Check whether the connector was already initialized
         if (c.$connector) {
@@ -36,7 +37,11 @@ window.Vaadin.Flow.tinymceConnector = {
               }, 20);
             },
 
-            isInDialog: function() {
+            setMode : function(newChangeMode) {
+              changeMode = newChangeMode;
+            },
+	
+			isInDialog: function() {
                 let inDialog = false;
                 let parent = c.parentElement;
                 while(parent != null) {
@@ -94,27 +99,30 @@ window.Vaadin.Flow.tinymceConnector = {
             });
 
             ed.on('change', function(e) {
-                // console.log("TMCE change");
+			  if (changeMode === 'timeout') {
                 const event = new Event("tchange");
                 event.htmlString = ed.getContent();
                 c.dispatchEvent(event);
+              }
             });
             ed.on('blur', function(e) {
-            //console.log("TMCE blur");
-            const event = new Event("tblur");
-            c.dispatchEvent(event);
+              const blurEvent = new Event("tblur");
+              c.dispatchEvent(blurEvent);
+              const changeEvent = new Event("tchange");
+              changeEvent.htmlString = ed.getContent();
+              c.dispatchEvent(changeEvent);
             });
             ed.on('focus', function(e) {
-            //console.log("TMCE focus");
-            const event = new Event("tfocus");
-            c.dispatchEvent(event);
+              const event = new Event("tfocus");
+              c.dispatchEvent(event);
             });
 
             ed.on('input', function(e) {
-            //console.log("TMCE input");
-            const event = new Event("tchange");
-            event.htmlString = ed.getContent();
-            c.dispatchEvent(event);
+              if (changeMode === 'timeout') {
+                const event = new Event("tchange");
+                event.htmlString = ed.getContent();
+                c.dispatchEvent(event);
+              }
             });
 
         };

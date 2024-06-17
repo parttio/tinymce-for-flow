@@ -26,9 +26,9 @@ public class OnAttachTest extends VerticalLayout {
         List<String> values = Arrays.asList("<b>Value 1</b>", "<i>Value 2</i>",
                 "<span style='text-decoration: underline;'>Value 3</span>");
         Button button2 = new Button("Preset");
-        
+
         EditorView editor = new EditorView(values.get(i));
-        button2.addClickListener(e-> {
+        button2.addClickListener(e -> {
             editor.setValue("<p style='color: blue'>Blue</p>", true);
         });
 
@@ -45,12 +45,14 @@ public class OnAttachTest extends VerticalLayout {
 
     public static class EditorView extends Composite<TinyMce> {
         private String value;
-        
+
         public EditorView(String value) {
             this.value = value;
             getContent().setWidth("600px");
-            getContent().configurePlugin(true, Plugin.TABLE).configureToolbar(true,
-                    Toolbar.TABLE);
+            getContent().configureLanguage(Language.FINNISH);
+            getContent().setValueChangeMode(ValueChangeMode.BLUR);
+            getContent().configurePlugin(true, Plugin.TABLE)
+                    .configureToolbar(true, Toolbar.TABLE);
             getContent().addValueChangeListener(e -> {
                 this.value = e.getValue();
                 Notification.show(this.value);
