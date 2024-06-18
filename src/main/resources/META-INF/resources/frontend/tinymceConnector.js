@@ -3,7 +3,7 @@ window.Vaadin.Flow.tinymceConnector = {
         // Check whether the connector was already initialized for the editor
         var readonlyTimeout;
         var currentValue = ta.innerHTML;
-        var changeMode = 'change';
+        var changeMode;
 
         var readonlyTimeout;
         if (c.$connector) {
@@ -11,6 +11,7 @@ window.Vaadin.Flow.tinymceConnector = {
 			// and re-init
 			c.$connector.editor.remove();
         } else {
+          changeMode = 'change';
           // Init connector at first visit
           c.$connector = {
           
