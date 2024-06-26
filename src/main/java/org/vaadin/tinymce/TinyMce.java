@@ -192,6 +192,7 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         ta.setProperty("innerHTML", currentValue);
         super.onAttach(attachEvent);
         initConnector();
+        saveOnClose();
     }
 
     @Override
@@ -217,6 +218,11 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
                         initialContentSent = true;
                     });
         });
+    }
+
+    private void saveOnClose(){
+        runBeforeClientResponse(ui -> {
+            getElement().callJsFunction("$connector.saveOnClose");});
     }
 
     void runBeforeClientResponse(SerializableConsumer<UI> command) {

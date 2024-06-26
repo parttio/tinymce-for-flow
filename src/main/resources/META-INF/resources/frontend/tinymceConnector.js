@@ -6,6 +6,17 @@ window.Vaadin.Flow.tinymceConnector = {
         var changeMode;
 
         var readonlyTimeout;
+
+        const beforeUnloadHandler = (event) => {
+          const blurEvent = new Event("tblur");
+          c.dispatchEvent(blurEvent);
+          const changeEvent = new Event("tchange");
+          changeEvent.htmlString = c.$connector.editor.getContent();
+          c.dispatchEvent(changeEvent);
+        };
+
+        window.removeEventListener("beforeunload", beforeUnloadHandler);
+
         if (c.$connector) {
 			// If connector was already set, this is re-attach, remove editor
 			// and re-init
@@ -54,6 +65,10 @@ window.Vaadin.Flow.tinymceConnector = {
                 parent = parent.parentElement;
               }
               return inDialog;
+            },
+
+            saveOnClose : function() {
+               window.addEventListener("beforeunload", beforeUnloadHandler);
             }
           };
         
