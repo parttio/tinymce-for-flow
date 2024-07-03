@@ -194,6 +194,7 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         if (attachEvent.isInitialAttach())
             injectTinyMceScript();
         initConnector();
+        saveOnClose();
     }
 
     @Override
@@ -220,6 +221,11 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
                     (enabled && !readOnly))
                     .then(res -> initialContentSent = true);
         });
+    }
+    
+    private void saveOnClose(){
+        runBeforeClientResponse(ui -> {
+            getElement().callJsFunction("$connector.saveOnClose");});
     }
 
     void runBeforeClientResponse(SerializableConsumer<UI> command) {
