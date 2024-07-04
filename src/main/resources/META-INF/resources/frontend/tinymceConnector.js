@@ -2,7 +2,17 @@ window.Vaadin.Flow.tinymceConnector = {
     initLazy: function (customConfig, c, ta, options, initialContent, enabled) {
 		var currentValue = ta.innerHTML;
         var readonlyTimeout;
-        var changeMode = 'change';
+        var changeMode;
+        
+        const beforeUnloadHandler = (event) => {
+          const blurEvent = new Event("tblur");
+          c.dispatchEvent(blurEvent);
+          const changeEvent = new Event("tchange");
+          changeEvent.htmlString = c.$connector.editor.getContent();
+          c.dispatchEvent(changeEvent);
+        };
+
+        window.removeEventListener("beforeunload", beforeUnloadHandler);
  
         // Check whether the connector was already initialized
         if (c.$connector) {
@@ -11,6 +21,7 @@ window.Vaadin.Flow.tinymceConnector = {
             c.$connector.editor.remove();
         } else {
           // Init connector at first visit
+          changeMode = 'change';
           c.$connector = {
           
             setEditorContent : function(html) {
@@ -52,6 +63,10 @@ window.Vaadin.Flow.tinymceConnector = {
                     parent = parent.parentElement;
                 }
                 return inDialog;
+            },
+            
+            saveOnClose : function() {
+                window.addEventListener("beforeunload", beforeUnloadHandler);
             }
           };
         }
