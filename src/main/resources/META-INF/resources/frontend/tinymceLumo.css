@@ -104,6 +104,10 @@ button.tox-tbtn.tox-tbtn--select.tox-tbtn--bespoke {
   background-color: var(--lumo-primary-color-10pct);
 }
 
+.tox .tox-menu.tox-collection.tox-collection--list {
+  min-width: var(--tiny-mce-menu-width, 300px);
+}
+
 .tox-menu-nav__js.tox-collection__item.tox-collection__item {
   color: var(--lumo-body-text-color);
 }

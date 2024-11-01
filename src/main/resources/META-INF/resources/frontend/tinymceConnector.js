@@ -105,12 +105,19 @@ window.Vaadin.Flow.tinymceConnector = {
                       ed.focus();
                     });
                     // Move aux element as child from body to element to fix menus in modal Dialog
-                    const aux = document.getElementsByClassName('tox-tinymce-aux')[0];
-                    aux.parentElement.removeChild(aux);
-                    // Fix to allow menu grow outside Dialog
-                    aux.style.position = 'absolute';
-                    c.appendChild(aux);
-                }
+                    Array.from(document.getElementsByClassName('tox-tinymce-aux')).forEach(aux => {
+					  if (!aux.dontmove) {
+                        aux.parentElement.removeChild(aux);
+                        // Fix to allow menu grow outside Dialog
+                        aux.style.position = 'absolute';
+                        c.editor = ed;
+                        c.appendChild(aux);
+                      }
+                    });
+                } else {
+					const aux = document.getElementsByClassName('tox-tinymce-aux')[0];
+					aux.dontmove = true;
+				}
             });
 
             ed.on('change', function(e) {
