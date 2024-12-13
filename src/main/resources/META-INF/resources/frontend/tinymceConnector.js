@@ -13,7 +13,13 @@ window.Vaadin.Flow.tinymceConnector = {
         };
 
         window.removeEventListener("beforeunload", beforeUnloadHandler);
- 
+
+        const syncValue = () => {
+            const event = new Event("tchange");
+            event.htmlString = c.$connector.editor.getContent();
+            c.dispatchEvent(event);
+        }
+
         // Check whether the connector was already initialized
         if (c.$connector) {
             // If connector was already set, this is re-attach, remove editor
@@ -33,6 +39,7 @@ window.Vaadin.Flow.tinymceConnector = {
         
             replaceSelectionContent : function(html) {
               this.editor.selection.setContent(html);
+              syncValue();
             },
           
             focus : function() {
@@ -122,17 +129,13 @@ window.Vaadin.Flow.tinymceConnector = {
 
             ed.on('change', function(e) {
 			  if (changeMode === 'timeout') {
-                const event = new Event("tchange");
-                event.htmlString = ed.getContent();
-                c.dispatchEvent(event);
+			    syncValue();
               }
             });
             ed.on('blur', function(e) {
               const blurEvent = new Event("tblur");
               c.dispatchEvent(blurEvent);
-              const changeEvent = new Event("tchange");
-              changeEvent.htmlString = ed.getContent();
-              c.dispatchEvent(changeEvent);
+              syncValue();
             });
             ed.on('focus', function(e) {
               const event = new Event("tfocus");
@@ -141,9 +144,7 @@ window.Vaadin.Flow.tinymceConnector = {
 
             ed.on('input', function(e) {
               if (changeMode === 'timeout') {
-                const event = new Event("tchange");
-                event.htmlString = ed.getContent();
-                c.dispatchEvent(event);
+                syncValue();
               }
             });
 

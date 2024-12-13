@@ -272,6 +272,12 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
 
     /**
      * Replaces text in the editors selection (can be just a caret position).
+     * <p>
+     *     Note, that this updates the value on the client-side on the next round-trip,
+     *     so the value on the server side is not necessarily up-to-date, right after this
+     *     call, but will be synced soon and a value change event will be fired after a
+     *     small timeout.
+     * </p>
      *
      * @param htmlString
      *            the html snippet to be inserted
