@@ -77,8 +77,8 @@ window.Vaadin.Flow.tinymceConnector = {
             }
           };
         }
-        
-        var baseconfig = JSON.parse(customConfig) || {} ;
+
+        var baseconfig = customConfig;
         
         Object.assign(baseconfig, options);
 

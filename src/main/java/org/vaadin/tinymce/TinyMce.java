@@ -215,9 +215,14 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
     private void initConnector() {
 
         runBeforeClientResponse(ui -> {
+            if(rawConfig == null) {
+                rawConfig = "{}";
+            }
             ui.getPage().executeJs(
-                    "window.Vaadin.Flow.tinymceConnector.initLazy($0, $1, $2, $3, $4, $5)",
-                    rawConfig, getElement(), ta, config, currentValue,
+                    "const editor = $0;" +
+                    "const rawconfig = " + rawConfig + ";\n" +
+                    "window.Vaadin.Flow.tinymceConnector.initLazy(rawconfig, $0, $1, $2, $3, $4)",
+                    getElement(), ta, config, currentValue,
                     (enabled && !readOnly))
                     .then(res -> initialContentSent = true);
         });
@@ -237,8 +242,13 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         return currentValue;
     }
 
-    public void setConfig(String jsonConfig) {
-        this.rawConfig = jsonConfig;
+    /**
+     * Sets the base configuration object as RAW JS. So be very careful what you pass in here.
+     *
+     * @param jsConfig
+     */
+    public void setConfig(String jsConfig) {
+        this.rawConfig = jsConfig;
     }
 
     public TinyMce configure(String configurationKey, String value) {
