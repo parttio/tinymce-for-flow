@@ -14,14 +14,13 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          server-id: ossrh
-          server-username: OSSRH_USERNAME
-          server-password: OSSRH_PASSWORD
-          gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
-          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+          server-id: central
+          server-username: CENTRAL_U
+          server-password: CENTRAL_T
       - name: Publish to Apache Maven Central
         run: mvn -Prelease deploy
         env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_PASSWORD: ${{ secrets.OSSRH_PW }}
+          CENTRAL_T: ${{ secrets.CENTRAL_TOKEN }}
+          CENTRAL_U: ${{ secrets.CENTRAL_USER }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
+          MAVEN_GPG_KEY: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
