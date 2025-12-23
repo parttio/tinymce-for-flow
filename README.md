@@ -1,6 +1,6 @@
 # TinyMCE for Flow
 
-Vaadin 10 Java integration for TinyMCE text editor. 
+Vaadin 25 Java integration for TinyMCE text editor. 
 
 Works with binder as the component implements HasValue interfaces. The value is plain HTML. If you can't trust your clients, apply converter that filters the input with e.g. JSOUP library.
 
