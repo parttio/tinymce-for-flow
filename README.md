@@ -14,10 +14,10 @@ TinyMCE (like most traditional wysiwyg editors) don't work inside shadow DOM. Yo
 
 Starting the test/demo server:
 ```
-mvn jetty:run
+mvn spring-boot:test-run
 ```
 
-This deploys demo at http://localhost:8080
+This deploys demo at http://localhost:9998
 
 ## Cutting a release
 

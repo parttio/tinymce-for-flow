@@ -4,6 +4,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Pre;
 import com.vaadin.flow.router.Route;
+import tools.jackson.core.JsonGenerator;
 
 @Route
 public class ConfigurationOptions extends Div {
@@ -36,7 +37,7 @@ public class ConfigurationOptions extends Div {
         add(tinyMce);
         getElement().getNode().runWhenAttached(ui -> ui
                 .beforeClientResponse(this, context -> {
-                    pre.setText(tinyMce.config.toJson());
+                    pre.setText(tinyMce.config.toString());
                 }));
         return tinyMce;
     }
