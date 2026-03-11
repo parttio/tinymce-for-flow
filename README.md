@@ -1,33 +1,77 @@
 # TinyMCE for Flow
 
-Vaadin 10 Java integration for TinyMCE text editor. 
+A Vaadin 25 Java integration for TinyMCE, a popular open-source rich text editor. The component implements `HasValue` and works with Vaadin's data binding. Content value is plain HTML.
 
-Works with binder as the component implements HasValue interfaces. The value is plain HTML. If you can't trust your clients, apply converter that filters the input with e.g. JSOUP library.
+## Usage
 
-Builds will be available from https://vaadin.com/directory 
+Add the dependency to your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>org.parttio</groupId>
+    <artifactId>tinymce-for-flow</artifactId>
+    <version>VERSION</version>
+</dependency>
+```
+
+Create and use the editor:
+
+```java
+TinyMce editor = new TinyMce();
+editor.setValue("<p>Hello, world</p>");
+
+// Or use a preconfigured setup
+TinyMce basicEditor = new TinyMce()
+    .configureToolbar(true, Toolbar.BOLD, Toolbar.ITALIC, Toolbar.UNDERLINE)
+    .configurePlugin(true, Plugin.LISTS);
+```
 
 ## Limitations
 
-TinyMCE (like most traditional wysiwyg editors) don't work inside shadow DOM. You most probably have issues if you use templates or use the editor in Dialog.
+TinyMCE 7 defaults to sandboxing any iframes in editor content with `sandbox_iframes: true`. If your content includes iframes and they appear broken, disable sandboxing:
 
-## Development instructions
-
-Starting the test/demo server:
-```
-mvn jetty:run
+```java
+editor.configure("sandbox_iframes", false);
 ```
 
-This deploys demo at http://localhost:8080
+If you cannot trust your users' HTML input, apply a converter that filters it (e.g., using the JSOUP library) before storing or displaying it.
 
-## Cutting a release
+## Upgrade Guide
 
-Before cutting a release, make sure the build passes properly locally and in GitHub Actions based verification build.
+When upgrading to version 5.x (Vaadin 25 / TinyMCE 7):
 
-To tag a release and increment versions, issue:
+- **Java 21, Vaadin 25, Spring Boot 4** are now required
+- **Plugin.ADVLIST** is no longer needed — the `lists` plugin handles it automatically
+- **Plugin.TEMPLATE** and **Plugin.TABFOCUS** are removed in TinyMCE 7
+- **Toolbar.FONTNAME** has been renamed to **Toolbar.FONT_FAMILY**; new **Toolbar.FONT_SIZE_INPUT** is available
+- **sandbox_iframes** defaults to `true` — note if iframe content looks broken
+- Dialog usage: no special configuration needed anymore
 
-    mvn release:prepare release:clean
+## Development
 
-Answer questions, defaults most often fine.
-Note that `release:perform` is not needed as there is a GitHub Action is set up build and to push release to Maven Central automatically.
+### Starting the demo server
 
-Directory will automatically pick up new releases within about half an hour, but if browser or Vaadin version support change, be sure to adjust the metadata in Vaadin Directory UI.
+```bash
+mvn spring-boot:run -pl . -Dspring-boot.run.main-class=org.vaadin.tinymce.Application
+```
+
+Demo views are `@Route`-annotated classes in `src/test/java`. Access them at http://localhost:8080.
+
+### Running tests
+
+```bash
+mvn test                                   # Run all tests
+mvn test -Dtest=MopoSmokeTest              # Run a specific test class
+```
+
+Tests use Spring Boot with Playwright (via Mopo) for browser-based E2E testing.
+
+## Release Process
+
+To tag a release and increment versions:
+
+```bash
+mvn release:prepare release:clean
+```
+
+Answer the prompts (defaults are usually fine). A GitHub Action automatically builds and deploys the release to Maven Central.
