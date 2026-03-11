@@ -36,7 +36,7 @@ public class ConfigurationOptions extends Div {
         add(tinyMce);
         getElement().getNode().runWhenAttached(ui -> ui
                 .beforeClientResponse(this, context -> {
-                    pre.setText(tinyMce.config.toJson());
+                    pre.setText(tinyMce.config.toString());
                 }));
         return tinyMce;
     }

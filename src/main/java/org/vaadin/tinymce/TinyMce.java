@@ -32,10 +32,10 @@ import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.dom.ShadowRoot;
 import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.shared.Registration;
-import elemental.json.Json;
-import elemental.json.JsonArray;
-import elemental.json.JsonObject;
-import elemental.json.JsonValue;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.util.Arrays;
 import java.util.UUID;
@@ -61,7 +61,7 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
     private boolean initialContentSent;
     private String currentValue = "";
     private String rawConfig;
-    JsonObject config = Json.createObject();
+    ObjectNode config = JsonNodeFactory.instance.objectNode();
     private Element ta = new Element("div");
 
     private int debounceTimeout = 0;
@@ -95,10 +95,8 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
 
         domListenerRegistration = getElement().addEventListener("tchange",
                 (DomEventListener) event -> {
-                    boolean value = event.getEventData()
-                            .hasKey("event.htmlString");
                     String htmlString = event.getEventData()
-                            .getString("event.htmlString");
+                            .get("event.htmlString").asText();
                     currentValue = htmlString;
                     setModelValue(htmlString, true);
                 });
@@ -219,10 +217,10 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
                 rawConfig = "{}";
             }
             ui.getPage().executeJs(
-                    "const editor = $0;" +
                     "const rawconfig = " + rawConfig + ";\n" +
-                    "window.Vaadin.Flow.tinymceConnector.initLazy(rawconfig, $0, $1, $2, $3, $4)",
-                    getElement(), ta, config, currentValue,
+                    "const options = " + config + ";\n" +
+                    "window.Vaadin.Flow.tinymceConnector.initLazy(rawconfig, $0, $1, options, $2, $3)",
+                    getElement(), ta, currentValue,
                     (enabled && !readOnly))
                     .then(res -> initialContentSent = true);
         });
@@ -257,11 +255,11 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
     }
 
     public TinyMce configure(String configurationKey, String... value) {
-        JsonArray array = Json.createArray();
-        for (int i = 0; i < value.length; i++) {
-            array.set(i, value[i]);
+        ArrayNode array = JsonNodeFactory.instance.arrayNode();
+        for (String v : value) {
+            array.add(v);
         }
-        config.put(configurationKey, array);
+        config.set(configurationKey, array);
         return this;
     }
 
@@ -402,21 +400,14 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
             createBasicTinyMce();
         }
 
-        JsonArray jsonArray = config.get("plugins");
-        int initialIndex = 0;
+        JsonNode existing = config.get("plugins");
+        ArrayNode jsonArray = (existing instanceof ArrayNode a) ? a : JsonNodeFactory.instance.arrayNode();
 
-        if (jsonArray != null) {
-            initialIndex = jsonArray.length();
-        } else {
-            jsonArray = Json.createArray();
+        for (Plugin plugin : plugins) {
+            jsonArray.add(plugin.pluginLabel);
         }
 
-        for (int i = 0; i < plugins.length; i++) {
-            jsonArray.set(initialIndex, plugins[i].pluginLabel);
-            initialIndex++;
-        }
-
-        config.put("plugins", jsonArray);
+        config.set("plugins", jsonArray);
         return this;
     }
 
@@ -429,8 +420,8 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
                 .collect(Collectors.joining(" "));
 
         String menubar;
-        if (config.hasKey("menubar")) {
-            menubar = config.getString("menubar");
+        if (config.has("menubar")) {
+            menubar = config.get("menubar").asText();
             menubar = menubar + " " + newconfig;
         } else {
             menubar = newconfig;
@@ -445,11 +436,11 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
             createBasicTinyMce();
         }
 
-        JsonValue jsonValue = config.get("toolbar");
+        JsonNode jsonNode = config.get("toolbar");
         String toolbarStr = "";
 
-        if (jsonValue != null) {
-            toolbarStr = toolbarStr.concat(jsonValue.asString());
+        if (jsonNode != null) {
+            toolbarStr = jsonNode.asText();
         }
 
         for (int i = 0; i < toolbars.length; i++) {
