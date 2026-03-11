@@ -40,7 +40,7 @@ If you cannot trust your users' HTML input, apply a converter that filters it (e
 
 When upgrading to version 5.x (Vaadin 25 / TinyMCE 7):
 
-- **Java 21, Vaadin 25, Spring Boot 4** are now required
+- **Java 21 and Vaadin 25** are now required
 - **Plugin.ADVLIST** is no longer needed — the `lists` plugin handles it automatically
 - **Plugin.TEMPLATE** and **Plugin.TABFOCUS** are removed in TinyMCE 7
 - **Toolbar.FONTNAME** has been renamed to **Toolbar.FONT_FAMILY**; new **Toolbar.FONT_SIZE_INPUT** is available
