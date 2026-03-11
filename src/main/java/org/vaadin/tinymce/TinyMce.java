@@ -98,7 +98,7 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
                     boolean value = event.getEventData()
                             .has("event.htmlString");
                     String htmlString = event.getEventData()
-                       .get("event.htmlString").toString();
+                       .get("event.htmlString").asString();
                     currentValue = htmlString;
                     setModelValue(htmlString, true);
                 });
@@ -257,11 +257,11 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
     }
 
     public TinyMce configure(String configurationKey, String... value) {
-       ArrayNode array = JsonNodeFactory.instance.arrayNode();
-        for (int i = 0; i < value.length; i++) {
-            array.add(value[i]);
+        ArrayNode array = JsonNodeFactory.instance.arrayNode();
+        for (String v : value) {
+            array.add(v);
         }
-        config.putArray(configurationKey).addAll(array);
+        config.set(configurationKey, array);
         return this;
     }
 
@@ -408,11 +408,11 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
             jsonArray = JsonNodeFactory.instance.arrayNode();
         }
 
-        for (int i = 0; i < plugins.length; i++) {
-            jsonArray.add(plugins[i].pluginLabel);
+        for (Plugin plugin : plugins) {
+            jsonArray.add(plugin.pluginLabel);
         }
 
-        config.putArray("plugins").addAll(jsonArray);
+        config.set("plugins", jsonArray);
         return this;
     }
 
