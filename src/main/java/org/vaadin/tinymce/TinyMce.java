@@ -47,13 +47,6 @@ import java.util.stream.Collectors;
  * Some configurations has Java shorthand, some must be adjusted via
  * getElement().setAttribute(String, String). See full options via
  * https://www.tiny.cloud/docs/integrations/webcomponent/
- * <p>
- * <strong>TinyMCE 7 change:</strong> {@code sandbox_iframes} defaults to
- * {@code true} in TinyMCE 7, which sandboxes any iframes in editor content.
- * To restore the TinyMCE 6 behaviour, call
- * {@code configure("sandbox_iframes", false)}.
- * <p>
- * Bundled TinyMCE version: 7.9.2
  *
  * @author mstahv
  */
@@ -102,8 +95,10 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
 
         domListenerRegistration = getElement().addEventListener("tchange",
                 (DomEventListener) event -> {
+                    boolean value = event.getEventData()
+                            .has("event.htmlString");
                     String htmlString = event.getEventData()
-                            .get("event.htmlString").asText();
+                       .get("event.htmlString").asString();
                     currentValue = htmlString;
                     setModelValue(htmlString, true);
                 });
@@ -224,10 +219,10 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
                 rawConfig = "{}";
             }
             ui.getPage().executeJs(
+                    "const editor = $0;" +
                     "const rawconfig = " + rawConfig + ";\n" +
-                    "const options = " + config + ";\n" +
-                    "window.Vaadin.Flow.tinymceConnector.initLazy(rawconfig, $0, $1, options, $2, $3)",
-                    getElement(), ta, currentValue,
+                    "window.Vaadin.Flow.tinymceConnector.initLazy(rawconfig, $0, $1, $2, $3, $4)",
+                    getElement(), ta, config, currentValue,
                     (enabled && !readOnly))
                     .then(res -> initialContentSent = true);
         });
@@ -407,8 +402,11 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
             createBasicTinyMce();
         }
 
-        JsonNode existing = config.get("plugins");
-        ArrayNode jsonArray = (existing instanceof ArrayNode a) ? a : JsonNodeFactory.instance.arrayNode();
+        ArrayNode jsonArray = (ArrayNode) config.get("plugins");
+
+        if (jsonArray == null) {
+            jsonArray = JsonNodeFactory.instance.arrayNode();
+        }
 
         for (Plugin plugin : plugins) {
             jsonArray.add(plugin.pluginLabel);
@@ -428,7 +426,7 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
 
         String menubar;
         if (config.has("menubar")) {
-            menubar = config.get("menubar").asText();
+            menubar = config.get("menubar").asString();
             menubar = menubar + " " + newconfig;
         } else {
             menubar = newconfig;
@@ -443,11 +441,11 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
             createBasicTinyMce();
         }
 
-        JsonNode jsonNode = config.get("toolbar");
+        JsonNode jsonValue = config.get("toolbar");
         String toolbarStr = "";
 
-        if (jsonNode != null) {
-            toolbarStr = jsonNode.asText();
+        if (jsonValue != null) {
+            toolbarStr = toolbarStr.concat(jsonValue.asString());
         }
 
         for (int i = 0; i < toolbars.length; i++) {
