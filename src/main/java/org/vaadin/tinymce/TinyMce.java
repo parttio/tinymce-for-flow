@@ -47,6 +47,13 @@ import java.util.stream.Collectors;
  * Some configurations has Java shorthand, some must be adjusted via
  * getElement().setAttribute(String, String). See full options via
  * https://www.tiny.cloud/docs/integrations/webcomponent/
+ * <p>
+ * <strong>TinyMCE 7 change:</strong> {@code sandbox_iframes} defaults to
+ * {@code true} in TinyMCE 7, which sandboxes any iframes in editor content.
+ * To restore the TinyMCE 6 behaviour, call
+ * {@code configure("sandbox_iframes", false)}.
+ * <p>
+ * Bundled TinyMCE version: 7.9.2
  *
  * @author mstahv
  */
@@ -381,12 +388,12 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         setValue("");
         this.configure("branding", false);
         this.basicTinyMCECreated = true;
-        this.configurePlugin(false, Plugin.ADVLIST, Plugin.AUTOLINK,
+        this.configurePlugin(false, Plugin.AUTOLINK,
                 Plugin.LISTS, Plugin.SEARCH_REPLACE);
         this.configureMenubar(false, Menubar.FILE, Menubar.EDIT, Menubar.VIEW,
                 Menubar.FORMAT);
         this.configureToolbar(false, Toolbar.UNDO, Toolbar.REDO,
-                Toolbar.SEPARATOR, Toolbar.FORMAT_SELECT, Toolbar.SEPARATOR,
+                Toolbar.SEPARATOR, Toolbar.BLOCKS, Toolbar.SEPARATOR,
                 Toolbar.BOLD, Toolbar.ITALIC, Toolbar.SEPARATOR,
                 Toolbar.ALIGN_LEFT, Toolbar.ALIGN_CENTER, Toolbar.ALIGN_RIGHT,
                 Toolbar.ALIGN_JUSTIFY, Toolbar.SEPARATOR, Toolbar.OUTDENT,
