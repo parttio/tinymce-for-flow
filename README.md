@@ -82,4 +82,6 @@ Answer the prompts (defaults are usually fine). A GitHub Action automatically bu
 TinyMCE 6 is gone for a while now, so we decided to move on, too.
 
 If you need Tiny 6 for license reasons, please have a look at [HugeRTE](https://hugerte.org/), which is a fork of Tiny 6 and community maintained.
-Check out the [Flow Addon](https://vaadin.com/directory/component/hugerte-for-flow) for HugeRTE
+Check out the [Flow Addon](https://vaadin.com/directory/component/hugerte-for-flow) for HugeRTE.
+
+If HugeRTE is not an option, you can create your own version of this addon based on the `v25_tiny6` branch.
