@@ -1,6 +1,7 @@
 # TinyMCE for Flow
 
-A Vaadin 25 Java integration for TinyMCE, a popular open-source rich text editor. The component implements `HasValue` and works with Vaadin's data binding. Content value is plain HTML.
+A Vaadin 25 Java integration for TinyMCE 7, a popular open-source rich text editor. The component implements `HasValue` and 
+works with Vaadin's data binding. Content value is plain HTML.
 
 ## Usage
 
@@ -10,7 +11,7 @@ Add the dependency to your `pom.xml`:
 <dependency>
     <groupId>org.parttio</groupId>
     <artifactId>tinymce-for-flow</artifactId>
-    <version>VERSION</version>
+    <version>5.0.0</version>
 </dependency>
 ```
 
@@ -28,7 +29,8 @@ TinyMce basicEditor = new TinyMce()
 
 ## Limitations
 
-TinyMCE 7 defaults to sandboxing any iframes in editor content with `sandbox_iframes: true`. If your content includes iframes and they appear broken, disable sandboxing:
+TinyMCE 7 defaults to sandboxing any iframes in editor content with `sandbox_iframes: true`. If your content includes 
+iframes and they appear broken, disable sandboxing:
 
 ```java
 editor.configure("sandbox_iframes", false);
@@ -75,3 +77,9 @@ mvn release:prepare release:clean
 ```
 
 Answer the prompts (defaults are usually fine). A GitHub Action automatically builds and deploys the release to Maven Central.
+
+## Tiny 6 support
+TinyMCE 6 is gone for a while now, so we decided to move on, too.
+
+If you need Tiny 6 for license reasons, please have a look at [HugeRTE](https://hugerte.org/), which is a fork of Tiny 6 and community maintained.
+Check out the [Flow Addon](https://vaadin.com/directory/component/hugerte-for-flow) for HugeRTE
