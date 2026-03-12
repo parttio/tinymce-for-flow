@@ -383,12 +383,12 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         setValue("");
         this.configure("branding", false);
         this.basicTinyMCECreated = true;
-        this.configurePlugin(false, Plugin.ADVLIST, Plugin.AUTOLINK,
+        this.configurePlugin(false, Plugin.AUTOLINK,
                 Plugin.LISTS, Plugin.SEARCH_REPLACE);
         this.configureMenubar(false, Menubar.FILE, Menubar.EDIT, Menubar.VIEW,
                 Menubar.FORMAT);
         this.configureToolbar(false, Toolbar.UNDO, Toolbar.REDO,
-                Toolbar.SEPARATOR, Toolbar.FORMAT_SELECT, Toolbar.SEPARATOR,
+                Toolbar.SEPARATOR, Toolbar.BLOCKS, Toolbar.SEPARATOR,
                 Toolbar.BOLD, Toolbar.ITALIC, Toolbar.SEPARATOR,
                 Toolbar.ALIGN_LEFT, Toolbar.ALIGN_CENTER, Toolbar.ALIGN_RIGHT,
                 Toolbar.ALIGN_JUSTIFY, Toolbar.SEPARATOR, Toolbar.OUTDENT,
