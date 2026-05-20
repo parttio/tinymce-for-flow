@@ -58,6 +58,10 @@ window.Vaadin.Flow.tinymceConnector = {
             setMode : function(newChangeMode) {
               changeMode = newChangeMode;
             },
+            
+            getMode : function() {
+              return changeMode;
+            },
 	
 			isInDialog: function() {
                 let inDialog = false;
@@ -128,7 +132,7 @@ window.Vaadin.Flow.tinymceConnector = {
             });
 
             ed.on('change', function(e) {
-			  if (changeMode === 'timeout') {
+			  if (c.$connector.getMode() === 'timeout') {
 			    syncValue();
               }
             });
@@ -143,7 +147,7 @@ window.Vaadin.Flow.tinymceConnector = {
             });
 
             ed.on('input', function(e) {
-              if (changeMode === 'timeout') {
+              if (c.$connector.getMode() === 'timeout') {
                 syncValue();
               }
             });
