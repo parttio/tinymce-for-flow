@@ -52,9 +52,23 @@ import java.util.stream.Collectors;
  */
 @Tag("div")
 @JavaScript("context://frontend/tinymceConnector.js")
-@StyleSheet("context://frontend/tinymceLumo.css")
+@StyleSheet("context://frontend/tinymce.css")
 public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
-        implements HasSize, Focusable<TinyMce> {
+    implements HasSize, Focusable<TinyMce> {
+
+    /**
+     * Marks {@code <html>} with a class ("aura" or "lumo") matching the
+     * application's active theme, so that {@code tinymce.css} can scope its
+     * rules with the corresponding design tokens.
+     */
+    private static final String DETECT_AND_APPLY_THEME_CLASS = """
+        const s = getComputedStyle(document.documentElement);
+        const t = s.getPropertyValue('--vaadin-aura-theme').trim() === '1' ? 'aura'
+            : (s.getPropertyValue('--vaadin-lumo-theme').trim() === '1' ? 'lumo' : '');
+        if (t) {
+            document.documentElement.classList.add(t);
+        }
+        """;
 
     private final DomListenerRegistration domListenerRegistration;
     private String id;
@@ -62,7 +76,7 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
     private String currentValue = "";
     private String rawConfig;
     ObjectNode config = JsonNodeFactory.instance.objectNode();
-    private Element ta = new Element("div");
+    private final Element ta = new Element("div");
 
     private int debounceTimeout = 0;
     private boolean basicTinyMCECreated;
@@ -77,7 +91,7 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
      * mode.
      *
      * @deprecated No longer needed since version x.x
-     * 
+     *
      * @param shadowRoot
      *            true of shadow root hack should be used
      */
@@ -94,14 +108,14 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         }
 
         domListenerRegistration = getElement().addEventListener("tchange",
-                (DomEventListener) event -> {
-                    boolean value = event.getEventData()
-                            .has("event.htmlString");
-                    String htmlString = event.getEventData()
-                       .get("event.htmlString").asString();
-                    currentValue = htmlString;
-                    setModelValue(htmlString, true);
-                });
+            (DomEventListener) event -> {
+                boolean value = event.getEventData()
+                    .has("event.htmlString");
+                String htmlString = event.getEventData()
+                    .get("event.htmlString").asString();
+                currentValue = htmlString;
+                setModelValue(htmlString, true);
+            });
         domListenerRegistration.addEventData("event.htmlString");
         domListenerRegistration.debounce(debounceTimeout);
     }
@@ -193,6 +207,7 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         super.onAttach(attachEvent);
         if (attachEvent.isInitialAttach())
             injectTinyMceScript();
+        attachEvent.getUI().getPage().executeJs(DETECT_AND_APPLY_THEME_CLASS);
         initConnector();
         saveOnClose();
     }
@@ -202,8 +217,8 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         // See https://github.com/parttio/tinymce-for-flow/issues/33
         if (isVisible()) {
             detachEvent.getUI().getPage().executeJs("""
-                    tinymce.get($0).remove();
-                    """, id);
+                tinymce.get($0).remove();
+                """, id);
         }
         super.onDetach(detachEvent);
         initialContentSent = false;
@@ -215,7 +230,7 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
     private void initConnector() {
 
         runBeforeClientResponse(ui -> {
-            if(rawConfig == null) {
+            if (rawConfig == null) {
                 rawConfig = "{}";
             }
             ui.getPage().executeJs(
@@ -224,18 +239,19 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
                     "window.Vaadin.Flow.tinymceConnector.initLazy(rawconfig, $0, $1, $2, $3, $4)",
                     getElement(), ta, config, currentValue,
                     (enabled && !readOnly))
-                    .then(res -> initialContentSent = true);
+                .then(res -> initialContentSent = true);
         });
     }
-    
-    private void saveOnClose(){
+
+    private void saveOnClose() {
         runBeforeClientResponse(ui -> {
-            getElement().callJsFunction("$connector.saveOnClose");});
+            getElement().callJsFunction("$connector.saveOnClose");
+        });
     }
 
     void runBeforeClientResponse(SerializableConsumer<UI> command) {
         getElement().getNode().runWhenAttached(ui -> ui
-                .beforeClientResponse(this, context -> command.accept(ui)));
+            .beforeClientResponse(this, context -> command.accept(ui)));
     }
 
     public String getCurrentValue() {
@@ -294,7 +310,7 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
      */
     public void replaceSelectionContent(String htmlString) {
         runBeforeClientResponse(ui -> getElement().callJsFunction(
-                "$connector.replaceSelectionContent", htmlString));
+            "$connector.replaceSelectionContent", htmlString));
     }
 
     /**
@@ -305,7 +321,7 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
      */
     protected void injectTinyMceScript() {
         getUI().get().getPage().addJavaScript(
-                "context://frontend/tinymce_addon/tinymce/tinymce.min.js");
+            "context://frontend/tinymce_addon/tinymce/tinymce.min.js");
     }
 
     @Override
@@ -313,41 +329,41 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         runBeforeClientResponse(ui -> {
             // Dialog has timing issues...
             getElement().executeJs("""
-                    const el = this;
-                    if(el.$connector.isInDialog()) {
-                        setTimeout(() => {
-                            el.$connector.focus()
-                        }, 150);
-                    } else {
-                        el.$connetor.focus();
-                    }
-                    """);
+                const el = this;
+                if(el.$connector.isInDialog()) {
+                    setTimeout(() => {
+                        el.$connector.focus()
+                    }, 150);
+                } else {
+                    el.$connetor.focus();
+                }
+                """);
             ;
         });
     }
 
     @Override
     public Registration addFocusListener(
-            ComponentEventListener<FocusEvent<TinyMce>> listener) {
+        ComponentEventListener<FocusEvent<TinyMce>> listener) {
         DomListenerRegistration domListenerRegistration = getElement()
-                .addEventListener("tfocus", event -> listener
-                        .onComponentEvent(new FocusEvent<>(this, false)));
+            .addEventListener("tfocus", event -> listener
+                .onComponentEvent(new FocusEvent<>(this, false)));
         return domListenerRegistration;
     }
 
     @Override
     public Registration addBlurListener(
-            ComponentEventListener<BlurEvent<TinyMce>> listener) {
+        ComponentEventListener<BlurEvent<TinyMce>> listener) {
         DomListenerRegistration domListenerRegistration = getElement()
-                .addEventListener("tblur", event -> listener
-                        .onComponentEvent(new BlurEvent<>(this, false)));
+            .addEventListener("tblur", event -> listener
+                .onComponentEvent(new BlurEvent<>(this, false)));
         return domListenerRegistration;
     }
 
     @Override
     public void blur() {
         throw new RuntimeException(
-                "Not implemented, TinyMce does not support programmatic blur.");
+            "Not implemented, TinyMce does not support programmatic blur.");
     }
 
     @Override
@@ -360,7 +376,7 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         boolean reallyEnabled = this.enabled && !this.readOnly;
         super.setEnabled(reallyEnabled);
         runBeforeClientResponse(ui -> getElement()
-                .callJsFunction("$connector.setEnabled", reallyEnabled));
+            .callJsFunction("$connector.setEnabled", reallyEnabled));
     }
 
     @Override
@@ -375,7 +391,7 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         this.currentValue = html;
         if (initialContentSent) {
             runBeforeClientResponse(ui -> getElement()
-                    .callJsFunction("$connector.setEditorContent", html));
+                .callJsFunction("$connector.setEditorContent", html));
         }
     }
 
@@ -384,15 +400,15 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         this.configure("branding", false);
         this.basicTinyMCECreated = true;
         this.configurePlugin(false, Plugin.AUTOLINK,
-                Plugin.LISTS, Plugin.SEARCH_REPLACE);
+            Plugin.LISTS, Plugin.SEARCH_REPLACE);
         this.configureMenubar(false, Menubar.FILE, Menubar.EDIT, Menubar.VIEW,
-                Menubar.FORMAT);
+            Menubar.FORMAT);
         this.configureToolbar(false, Toolbar.UNDO, Toolbar.REDO,
-                Toolbar.SEPARATOR, Toolbar.BLOCKS, Toolbar.SEPARATOR,
-                Toolbar.BOLD, Toolbar.ITALIC, Toolbar.SEPARATOR,
-                Toolbar.ALIGN_LEFT, Toolbar.ALIGN_CENTER, Toolbar.ALIGN_RIGHT,
-                Toolbar.ALIGN_JUSTIFY, Toolbar.SEPARATOR, Toolbar.OUTDENT,
-                Toolbar.INDENT);
+            Toolbar.SEPARATOR, Toolbar.BLOCKS, Toolbar.SEPARATOR,
+            Toolbar.BOLD, Toolbar.ITALIC, Toolbar.SEPARATOR,
+            Toolbar.ALIGN_LEFT, Toolbar.ALIGN_CENTER, Toolbar.ALIGN_RIGHT,
+            Toolbar.ALIGN_JUSTIFY, Toolbar.SEPARATOR, Toolbar.OUTDENT,
+            Toolbar.INDENT);
         return this;
 
     }
@@ -422,7 +438,7 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
         }
 
         String newconfig = Arrays.stream(menubars).map(m -> m.menubarLabel)
-                .collect(Collectors.joining(" "));
+            .collect(Collectors.joining(" "));
 
         String menubar;
         if (config.has("menubar")) {
@@ -450,7 +466,7 @@ public class TinyMce extends AbstractCompositeField<Div, TinyMce, String>
 
         for (int i = 0; i < toolbars.length; i++) {
             toolbarStr = toolbarStr.concat(" ").concat(toolbars[i].toolbarLabel)
-                    .concat(" ");
+                .concat(" ");
         }
 
         config.put("toolbar", toolbarStr);
