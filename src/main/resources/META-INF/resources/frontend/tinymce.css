@@ -37,6 +37,11 @@
 	padding: 0;
 }
 
+.aura .tox.tox-tinymce-aux .tox-toolbar__overflow {
+	background-color: var(--vaadin-overlay-background, var(--aura-surface-color-solid)) !important;
+	background-image: linear-gradient(var(--vaadin-background-container), var(--vaadin-background-container)) !important;
+}
+
 .aura .tox:not([dir=rtl]) .tox-toolbar-overlord .tox-toolbar__group:not(:last-of-type) {
 	border-right: 1px solid var(--vaadin-border-color);
 }
@@ -173,6 +178,11 @@
 .lumo .tox .tox-editor-container .tox-editor-header:not(.tox-tinymce-inline) {
 	box-shadow: var(--lumo-box-shadow-xs);
 	padding: 0;
+}
+
+.lumo .tox.tox-tinymce-aux .tox-toolbar__overflow {
+	background-color: var(--lumo-base-color) !important;
+	background-image: linear-gradient(var(--lumo-contrast-5pct), var(--lumo-contrast-5pct)) !important;
 }
 
 .lumo .tox:not([dir=rtl]) .tox-toolbar-overlord .tox-toolbar__group:not(:last-of-type) {
